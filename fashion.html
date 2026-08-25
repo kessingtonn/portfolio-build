@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Work — Zangrid Studios</title>
-<meta name="description" content="Wedding films, portrait sittings, brand campaigns and UGC by Zangrid Studios. Watch the films and browse recent projects.">
+<title>Fashion — Zangrid Studios</title>
+<meta name="description" content="Lookbooks, campaigns and runway — stills and motion shot on the same call sheet. Fashion photography and film by Zangrid Studios.">
 <meta name="theme-color" content="#0b0b0c">
-<link rel="canonical" href="https://zangridstudios.com/work.html">
+<link rel="canonical" href="https://zangridstudios.com/fashion.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Work — Zangrid Studios">
-<meta property="og:description" content="Selected films and photography across weddings, portraits, brand and UGC.">
+<meta property="og:title" content="Fashion — Zangrid Studios">
+<meta property="og:description" content="Lookbooks, campaigns and runway — stills and motion shot on the same call sheet.">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -78,56 +78,59 @@
 </div>
 
 <main id="main">
-  <section class="hero hero--inner grain" aria-label="Work">
+  <!-- ============ hero ============ -->
+  <section class="hero hero--inner grain" aria-label="Fashion">
     <div class="hero__media"><div class="hero__fallback" aria-hidden="true"></div></div>
     <div class="hero__scrim" aria-hidden="true"></div>
     <div class="wrap hero__body">
-      <p class="eyebrow">Portfolio</p>
-      <h1 style="font-size:var(--step-3);max-width:18ch;margin-top:1rem">Films and frames from the last two years.</h1>
-      <p class="lede" style="margin-top:1.5rem">Click any project to play the film in full. Photo stories open with
-        a note on what was delivered — full galleries go to clients privately.</p>
+      <p class="eyebrow">Portfolio — Fashion</p>
+      <h1 style="font-size:var(--step-3);max-width:16ch;margin-top:1rem">Fashion</h1>
+      <p class="lede" style="margin-top:1.5rem" data-category-copy="fashion:lede">Lookbooks, campaigns and runway — stills and motion shot on the same call sheet.</p>
     </div>
   </section>
 
-  <section class="section wrap">
-    <div class="section-head">
-      <div class="filters" data-filters role="group" aria-label="Filter projects by service"></div>
-      <p class="eyebrow" data-work-count>All projects</p>
-    </div>
-
-    <div class="work-grid" data-work-grid data-filterable data-filter="all"></div>
-    <noscript>
-      <p class="empty-note">The portfolio grid needs JavaScript. Email
-        <a class="link-u" href="mailto:hello@zangridstudios.com">hello@zangridstudios.com</a> and we will send a private reel link.</p>
-    </noscript>
+  <!-- ============ jump between categories ============ -->
+  <section class="section--tight wrap">
+    <div class="svc-nav" data-category-nav="fashion" aria-label="Other categories"></div>
   </section>
 
-  <!-- ============ horizontal films ============ -->
+  <!-- ============ intro + counts ============ -->
+  <section class="section--tight wrap">
+    <div class="split">
+      <div>
+        <p class="eyebrow reveal">About this work</p>
+      </div>
+      <div>
+        <p class="lede reveal" data-category-copy="fashion:intro">Editorial and commercial fashion for labels, stylists and agencies. We light for the garment, cut for the silhouette, and deliver a set that works across a lookbook, a website and a feed.</p>
+        <div class="stats reveal" data-delay="1" data-category-stats="fashion" style="margin-top:2.5rem"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ films, 16:9 ============ -->
   <section class="section section--line wrap" id="films">
     <div class="section-head">
       <div>
-        <p class="eyebrow reveal">16:9 — Horizontal</p>
-        <h2 class="reveal" style="margin-top:.75rem">Films for the big frame</h2>
+        <p class="eyebrow reveal">Films — 16:9</p>
+        <h2 class="reveal" style="margin-top:.75rem">Watch the work</h2>
       </div>
-      <p class="muted reveal" style="max-width:34ch;font-size:var(--step--1)">Wedding features, brand
-        films and campaign cuts, mastered for web, broadcast and the room with the big screen.
-        Hover any tile for a preview — click to watch it in full.</p>
+      <p class="muted reveal" style="max-width:32ch;font-size:var(--step--1)">Hover a tile to preview it,
+        click to play it in full.</p>
     </div>
-    <div class="reel-grid" data-film-grid data-orientation="horizontal"></div>
+    <div class="reel-grid" data-film-grid data-category="fashion" data-orientation="horizontal"></div>
   </section>
 
-  <!-- ============ vertical films ============ -->
+  <!-- ============ films, 9:16 ============ -->
   <section class="section section--line wrap" id="vertical">
     <div class="section-head">
       <div>
-        <p class="eyebrow reveal">9:16 — Vertical</p>
-        <h2 class="reveal" style="margin-top:.75rem">Made for the feed</h2>
+        <p class="eyebrow reveal">Films — 9:16</p>
+        <h2 class="reveal" style="margin-top:.75rem">Vertical cuts</h2>
       </div>
-      <p class="muted reveal" style="max-width:34ch;font-size:var(--step--1)">Creator-style cuts, hook-led
-        ads and same-week wedding shares — framed vertically from the shoot, never cropped down
-        from a landscape master.</p>
+      <p class="muted reveal" style="max-width:32ch;font-size:var(--step--1)">Framed vertically on the
+        shoot, not cropped down afterwards.</p>
     </div>
-    <div class="reel-grid reel-grid--vertical" data-film-grid data-orientation="vertical"></div>
+    <div class="reel-grid reel-grid--vertical" data-film-grid data-category="fashion" data-orientation="vertical"></div>
   </section>
 
   <!-- ============ photography ============ -->
@@ -135,37 +138,30 @@
     <div class="section-head">
       <div>
         <p class="eyebrow reveal">Photography</p>
-        <h2 class="reveal" style="margin-top:.75rem">Frames from across the categories</h2>
+        <h2 class="reveal" style="margin-top:.75rem">Selected frames</h2>
       </div>
-      <p class="muted reveal" style="max-width:34ch;font-size:var(--step--1)">A sample from every collection.
-        Click a frame to open the viewer; arrow keys move through the set. Full galleries live on each
-        category page.</p>
+      <p class="muted reveal" style="max-width:32ch;font-size:var(--step--1)">Click any frame to open the
+        viewer — arrow keys move through the set.</p>
     </div>
-    <div class="photo-grid" data-photo-grid data-limit="18"></div>
+    <div class="photo-grid" data-photo-grid data-category="fashion"></div>
   </section>
 
-  <section class="section section--line wrap">
-    <div class="split">
+  <!-- ============ project details ============ -->
+  <section class="section section--line wrap" id="details">
+    <div class="section-head">
       <div>
-        <p class="eyebrow reveal">Also on</p>
-        <h2 class="reveal" style="margin-top:.75rem">Longer cuts live on Vimeo &amp; YouTube</h2>
+        <p class="eyebrow reveal">The details</p>
+        <h2 class="reveal" style="margin-top:.75rem">Projects, credits &amp; deliverables</h2>
       </div>
-      <div>
-        <p class="lede reveal">Full-length wedding features, behind-the-scenes and client channels are collected
-          on our video channels — subscribe there if you want the long versions rather than the highlights.</p>
-        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:2rem" class="reveal" data-delay="1">
-          <a class="btn" data-site="vimeo" data-site-href-only href="https://vimeo.com/zangridstudios" target="_blank" rel="noopener">Vimeo channel</a>
-          <a class="btn" data-site="youtube" data-site-href-only href="https://youtube.com/@zangridstudios" target="_blank" rel="noopener">YouTube channel</a>
-          <a class="btn" data-site="instagram" data-site-href-only href="https://instagram.com/zangridstudios" target="_blank" rel="noopener">Instagram</a>
-        </div>
-      </div>
+      <a class="arrow-link reveal" href="enquiry.html?service=brand">Enquire about fashion</a>
     </div>
+    <div data-project-details="fashion"></div>
   </section>
 
   <section class="cta wrap">
-    <p class="eyebrow reveal">Next project</p>
-    <h2 class="reveal" style="max-width:16ch">Yours could be the next one up here.</h2>
-    <a class="btn btn--solid reveal" data-delay="1" href="enquiry.html">Start an enquiry</a>
+    <p class="eyebrow reveal">Fashion</p>
+    <h2 class="reveal" style="max-width:18ch">Tell us what you want shot.</h2>
+    <a class="btn btn--solid reveal" data-delay="1" href="enquiry.html?service=brand">Start an enquiry</a>
   </section>
 </main>
 

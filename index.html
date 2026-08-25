@@ -45,8 +45,12 @@
         <button class="nav__drop-btn" type="button" aria-expanded="false" aria-haspopup="true">Work</button>
         <div class="nav__panel">
           <a data-nav="work.html" href="work.html">All work<small>Every project, filterable</small></a>
-          <a href="work.html#films">Horizontal films<small>16:9 cinema cuts</small></a>
-          <a href="work.html#vertical">Vertical films<small>9:16 for social</small></a>
+          <a data-nav="fashion.html" href="fashion.html">Fashion<small>Lookbooks &amp; campaigns</small></a>
+          <a data-nav="events.html" href="events.html">Events<small>Launches &amp; conferences</small></a>
+          <a data-nav="weddings.html" href="weddings.html">Weddings<small>Films &amp; galleries</small></a>
+          <a data-nav="portraits.html" href="portraits.html">Portraits<small>People &amp; founders</small></a>
+          <a data-nav="commercial.html" href="commercial.html">Commercial<small>Product &amp; advertising</small></a>
+          <a data-nav="brand.html" href="brand.html">Brand<small>Hero films &amp; libraries</small></a>
         </div>
       </div>
       <a class="nav__link" data-nav="packages.html" href="packages.html">Packages</a>
@@ -70,8 +74,12 @@
     <a class="menu__link" href="index.html">Home</a>
     <a class="menu__link" href="work.html">Work</a>
     <div class="menu__sub">
-      <a href="work.html#films">Horizontal films</a>
-      <a href="work.html#vertical">Vertical films</a>
+      <a href="fashion.html">Fashion</a>
+      <a href="events.html">Events</a>
+      <a href="weddings.html">Weddings</a>
+      <a href="portraits.html">Portraits</a>
+      <a href="commercial.html">Commercial</a>
+      <a href="brand.html">Brand</a>
     </div>
     <a class="menu__link" href="packages.html">Packages</a>
     <a class="menu__link" href="about.html">Studio</a>
@@ -109,10 +117,12 @@
       </h1>
       <div class="hero__foot">
         <ul class="hero__tags">
+          <li>Fashion</li>
+          <li>Events</li>
           <li>Weddings</li>
           <li>Portraits</li>
+          <li>Commercial</li>
           <li>Brand</li>
-          <li>UGC</li>
         </ul>
         <div style="display:flex;gap:.75rem;flex-wrap:wrap">
           <a class="btn btn--solid" href="work.html">View the work</a>
@@ -131,8 +141,8 @@
   <!-- ============ marquee ============ -->
   <div class="marquee" aria-hidden="true">
     <div class="marquee__track">
-      <span>Wedding films</span><span>Portrait sittings</span><span>Brand campaigns</span>
-      <span>UGC that converts</span><span>Documentary coverage</span>
+      <span>Fashion campaigns</span><span>Event coverage</span><span>Wedding films</span>
+      <span>Portrait sittings</span><span>Commercial content</span><span>Brand stories</span>
     </div>
   </div>
 
@@ -172,43 +182,16 @@
     <noscript><p class="empty-note">Enable JavaScript to browse the portfolio, or email us for a private link.</p></noscript>
   </section>
 
-  <!-- ============ services ============ -->
+  <!-- ============ categories ============ -->
   <section class="section section--line wrap" id="services">
     <div class="section-head">
       <div>
-        <p class="eyebrow reveal">What we do</p>
-        <h2 class="reveal" style="margin-top:.75rem">Four ways we work</h2>
+        <p class="eyebrow reveal">What we shoot</p>
+        <h2 class="reveal" style="margin-top:.75rem">Six collections, photo &amp; film</h2>
       </div>
       <a class="arrow-link reveal" href="packages.html">See packages &amp; pricing</a>
     </div>
-
-    <div class="rows">
-      <article class="row reveal">
-        <p class="row__n">01</p>
-        <h3 class="row__t"><a href="packages.html#wedding" class="link-u">Weddings</a></h3>
-        <p class="row__d">Full-day photo and film coverage by a crew that stays out of the way. Highlight films
-          cut to real audio, galleries delivered in six weeks, and a feature edit for the days you want
-          to sit through properly.</p>
-      </article>
-      <article class="row reveal">
-        <p class="row__n">02</p>
-        <h3 class="row__t"><a href="packages.html#portrait" class="link-u">Portraits</a></h3>
-        <p class="row__d">Studio daylight or a location that means something. Individuals, couples, families and
-          founder series — retouched with a light hand and licensed for however you need to use them.</p>
-      </article>
-      <article class="row reveal">
-        <p class="row__n">03</p>
-        <h3 class="row__t"><a href="packages.html#brand" class="link-u">Brand</a></h3>
-        <p class="row__d">Hero films, campaign stills and the cut-downs your channels actually run. Scripting,
-          casting and delivery specs handled in-house, from one shoot to a monthly content partnership.</p>
-      </article>
-      <article class="row reveal">
-        <p class="row__n">04</p>
-        <h3 class="row__t"><a href="packages.html#ugc" class="link-u">UGC</a></h3>
-        <p class="row__d">Creator-style vertical content built for paid social. Multiple hooks per concept,
-          native pacing, and usage rights sorted up front so the good ones can run.</p>
-      </article>
-    </div>
+    <div class="rows" data-category-rows></div>
   </section>
 
   <!-- ============ process ============ -->
@@ -296,12 +279,14 @@
         </ul>
       </div>
       <div>
-        <h4>Services</h4>
+        <h4>Portfolio</h4>
         <ul>
-          <li><a href="packages.html#wedding">Weddings</a></li>
-          <li><a href="packages.html#portrait">Portraits</a></li>
-          <li><a href="packages.html#brand">Brand</a></li>
-          <li><a href="packages.html#ugc">UGC</a></li>
+          <li><a href="fashion.html">Fashion</a></li>
+          <li><a href="events.html">Events</a></li>
+          <li><a href="weddings.html">Weddings</a></li>
+          <li><a href="portraits.html">Portraits</a></li>
+          <li><a href="commercial.html">Commercial</a></li>
+          <li><a href="brand.html">Brand</a></li>
         </ul>
       </div>
       <div>

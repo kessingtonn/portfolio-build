@@ -1,8 +1,8 @@
 # Zangrid Studios — photo & video portfolio
 
 A static, dependency-free portfolio site for a photo and film studio: looping video hero,
-filterable portfolio with an embedded video player, package/pricing pages for weddings,
-portraits, brand and UGC, and a working enquiry form.
+six category collections with photo and film grids, an embedded video player and photo viewer,
+package/pricing pages, client reviews, and a working enquiry form.
 
 No build step, no framework, no npm install. Open `index.html` or serve the folder.
 
@@ -14,17 +14,21 @@ python3 -m http.server 8000     # then visit http://localhost:8000
 
 | File            | What it is |
 | --------------- | ---------- |
-| `index.html`    | Home — looping video hero, statement, featured work, services, client logo strip, reviews |
-| `work.html`     | Portfolio grid with service filters (`?c=wedding` deep-links a filter), plus dedicated 16:9 (`#films`) and 9:16 (`#vertical`) reels with hover previews |
+| `index.html`    | Home — looping video hero, statement, featured work, the six collections, client logo strip, reviews |
+| `work.html`     | Everything, filterable by category (`?c=weddings` deep-links a filter), plus 16:9 (`#films`) and 9:16 (`#vertical`) reels and a mixed photo grid |
+| `fashion.html` `events.html` `weddings.html` `portraits.html` `commercial.html` `brand.html` | One presentation page per category — films in both orientations, a photo grid, and full project details. **Generated** by `node tools/build-categories.js` from `templates/category.template.html` |
 | `packages.html` | Wedding / portrait / brand / UGC packages, add-ons, FAQ |
 | `reviews.html`  | Client reviews, filterable by service, with average rating |
 | `enquiry.html`  | Enquiry form with package prefill (`?service=wedding&package=wedding-signature`) |
 | `about.html`    | Studio, crew, kit |
 | `404.html`      | Not-found page |
 
-The primary nav uses two dropdowns — **Work** (all work / horizontal / vertical) and **Studio**
+The primary nav uses two dropdowns — **Work** (all work, then the six categories) and **Studio**
 (the studio / client reviews). They open on hover, on click, and with the keyboard (`ArrowDown`
 to enter, `Escape` to leave); the mobile menu lists the same links as sub-items.
+
+**New here? [`docs/MEDIA-GUIDE.md`](docs/MEDIA-GUIDE.md) walks through putting your own photos and
+videos into the placeholders, field by field.**
 
 ## Everything you edit lives in `assets/js/data.js`
 
@@ -34,7 +38,8 @@ to enter, `Escape` to leave); the mobile menu lists the same links as sub-items.
 * `clients` — the moving "brands & companies we have worked with" strip. Add
   `logo: 'assets/img/clients/name.svg'` to an entry to use a real logo file instead of the
   typographic wordmark; `note` becomes the tooltip.
-* `projects` — the portfolio. One entry per project.
+* `categories` — the six collections, each with the copy for its own page.
+* `projects` — the portfolio. One entry per project, holding films, photographs and details.
 * `packages` — the four services and their three tiers each. The packages page, the enquiry
   form's package dropdown and the enquiry sidebar summary all read from this.
 * `testimonials` — client reviews. Drives the reviews page, the quote strips (`featured: true`
@@ -42,50 +47,67 @@ to enter, `Escape` to leave); the mobile menu lists the same links as sub-items.
 
 ### Adding a project
 
+Each project can hold **films**, **photographs**, or both, plus a details block:
+
 ```js
 {
-  id: 'smith-wedding',              // unique, used in URLs
+  id: 'smith-wedding',            // unique slug
   title: 'Ada & Sam',
-  client: 'Yorkshire, England',
-  category: 'wedding',              // wedding | portrait | brand | ugc
-  format: 'film',                   // film | photo
-  orientation: 'horizontal',        // horizontal (16:9) | vertical (9:16)
+  category: 'weddings',           // fashion | events | weddings | portraits | commercial | brand
   year: '2026',
-  featured: true,                   // shows on the home page
-  wide: true,                       // spans two grid columns (optional)
-  portrait: true,                   // 4:5 tile instead of 16:10 (optional)
-  hue: 32,                          // tints the generated placeholder tile
+  featured: true,                 // include on the home page
+  hue: 32,                        // tints any remaining placeholders
   blurb: 'One line about the project.',
   tags: ['Wedding film', '6 min'],
-  poster: 'assets/img/ada-still.jpg',      // optional still
-  preview: 'assets/video/ada-preview.mp4', // plays on hover (optional)
-  video: { type: 'youtube', id: 'dQw4w9WgXcQ' }
+  cover: 'assets/img/work/smith/cover.jpg',
+
+  films: [
+    { title: 'Highlight film', duration: '6:12', orientation: 'horizontal',
+      preview: 'assets/video/work/smith/preview.mp4',
+      video: { type: 'file', src: 'assets/video/work/smith/highlight.mp4' } },
+    { title: 'Vertical cut', duration: '0:58', orientation: 'vertical',
+      video: { type: 'youtube', id: 'dQw4w9WgXcQ' } }
+  ],
+
+  gallery: stills(32, [
+    { src: 'assets/img/work/smith/01.jpg', caption: 'Vows', alt: 'Exchanging vows', orientation: 'portrait' }
+  ]),
+
+  details: {
+    client: 'Ada & Sam',
+    location: 'Yorkshire, England',
+    date: 'June 2026',
+    services: ['Wedding film', 'Photography'],
+    deliverables: ['6-minute highlight film', '500 edited images'],
+    credits: [{ role: 'Direction', name: 'Zangrid Studios' }]
+  }
 }
 ```
 
-`orientation` decides which dedicated reel the project appears in on the work page — the 16:9
-section, or the 9:16 section where tiles and the player both switch to a portrait stage. Shoot
-and export vertical work at 9:16; the tiles crop to fill, so a cropped landscape master will look
-like one.
-
-### Previews
-
-Hovering (or tabbing to) a tile plays a muted, looping preview inside it. The clip comes from
-`preview` if set, otherwise from `video.src` for self-hosted films — YouTube and Vimeo projects
-need their own `preview` file, since their embeds cannot be used this way. Keep previews short
-and small (5–8 seconds, ~1 MB); they load only on hover, and are skipped entirely for
-reduced-motion users, data-saver mode, slow connections, and touch devices with no hover.
-
-`video` accepts three shapes — omit it entirely for a photo-only story:
+`video` accepts three shapes:
 
 ```js
-video: { type: 'youtube', id: 'VIDEO_ID' }                  // youtube-nocookie embed
-video: { type: 'vimeo',   id: '123456789' }                 // vimeo player embed
-video: { type: 'file',    src: 'assets/video/film.mp4' }    // self-hosted
+video: { type: 'file',    src: 'assets/video/work/smith/film.mp4' }  // self-hosted
+video: { type: 'youtube', id: 'VIDEO_ID' }                           // youtube-nocookie embed
+video: { type: 'vimeo',   id: '123456789' }                          // vimeo player
 ```
 
-Every project also gets a "Watch on YouTube / Vimeo / Open full film" link in the player.
-Override the destination with `link: 'https://…'`.
+Gallery entries with no `src` draw a tinted placeholder, so you can build a project out before the
+photographs are ready.
+
+**Full instructions — folder layout, export settings, what each field controls, hosting options —
+are in [`docs/MEDIA-GUIDE.md`](docs/MEDIA-GUIDE.md).**
+
+### Adding a category
+
+Add an entry to `categories` in `data.js`, then regenerate the pages:
+
+```bash
+node tools/build-categories.js
+```
+
+Edit `templates/category.template.html`, never the generated category pages — they are overwritten
+on every run.
 
 ## The hero video
 
@@ -116,7 +138,7 @@ out of view.
 ## Placeholder media — replace before launch
 
 * Portfolio clips point at Google's public sample videos so the player works immediately.
-* Project tiles with no `poster` render a generated gradient placeholder tinted by `hue`.
+* Photo tiles and project tiles with no `src` render a generated gradient placeholder tinted by `hue`.
 * Crew photos on `about.html` are the same placeholders.
 * Prices, copy, stats, testimonials and contact details are plausible drafts, not real terms.
 

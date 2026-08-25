@@ -64,248 +64,659 @@ window.ZANGRID = (function () {
     { name: 'Bloom Botanics', note: 'Social content' }
   ];
 
+  /* ---- categories ------------------------------------
+     Each one gets its own presentation page, generated
+     from templates/category.template.html by
+     `node tools/build-categories.js`.
+     ---------------------------------------------------- */
+  const categories = [
+    {
+      id: 'fashion',
+      label: 'Fashion',
+      page: 'fashion.html',
+      title: 'Fashion',
+      lede: 'Lookbooks, campaigns and runway — stills and motion shot on the same call sheet.',
+      intro:
+        'Editorial and commercial fashion for labels, stylists and agencies. We light for the garment, ' +
+        'cut for the silhouette, and deliver a set that works across a lookbook, a website and a feed.'
+    },
+    {
+      id: 'events',
+      label: 'Events',
+      page: 'events.html',
+      title: 'Events',
+      lede: 'Launches, conferences, parties and everything that only happens once.',
+      intro:
+        'Same-day highlights, next-morning galleries, and a recap film that gets the room back. ' +
+        'We cover the keynote and the corridor conversation, and we stay out of the sightlines.'
+    },
+    {
+      id: 'weddings',
+      label: 'Weddings',
+      page: 'weddings.html',
+      title: 'Weddings',
+      lede: 'The whole day, documented — a film to sit through and a gallery to print.',
+      intro:
+        'Two-person crews on every wedding, photo and film from one team. Highlight films cut to real ' +
+        'audio, vertical shares delivered within days, and galleries that look like the day you had.'
+    },
+    {
+      id: 'portraits',
+      label: 'Portraits',
+      page: 'portraits.html',
+      title: 'Portraits',
+      lede: 'Individuals, couples, families and founders — in daylight or on location.',
+      intro:
+        'Sittings that stay comfortable and finish with frames you actually use. Headshots, editorial ' +
+        'sets and founder series, retouched with a light hand and licensed for however you need them.'
+    },
+    {
+      id: 'commercial',
+      label: 'Commercial',
+      page: 'commercial.html',
+      title: 'Commercial',
+      lede: 'Product, advertising and creator-style content built to perform.',
+      intro:
+        'Ads, product films, demos and UGC. Multiple hooks per concept, cut to every platform spec, ' +
+        'with usage rights sorted before the shoot so the winning asset can run.'
+    },
+    {
+      id: 'brand',
+      label: 'Brand',
+      page: 'brand.html',
+      title: 'Brand',
+      lede: 'Hero films and stills libraries that carry a whole identity.',
+      intro:
+        'Brand films, recruitment stories and photography systems. Scripting, casting and art direction ' +
+        'handled in-house so the film and the stills come out of one idea, not two briefs.'
+    }
+  ];
+
   /* ---- portfolio ------------------------------------
-     category    : wedding | portrait | brand | ugc
-     format      : film | photo
-     orientation : horizontal (16:9) | vertical (9:16)
-     video       : { type:'file',   src:'…mp4' }
-                   { type:'youtube', id:'dQw4w9WgXcQ' }
-                   { type:'vimeo',   id:'76979871' }
-                   omit `video` for a photo-only story
-     preview     : short muted mp4 played on hover. Falls
-                   back to `video.src` for self-hosted
-                   films; required for youtube/vimeo ones.
-     link        : optional "watch on …" destination
-     poster      : optional still, e.g. 'assets/img/still-01.jpg'
-     hue         : 0–360, tints the generated poster when no
-                   still is supplied
+     Every project can carry FILMS, PHOTOS, or both.
+
+     id          : unique slug, used in URLs
+     category    : one of the ids above
+     films[]     : { title, duration, orientation, video, preview, poster, link }
+                   video: { type:'file',    src:'…mp4' }
+                          { type:'youtube', id:'dQw4w9WgXcQ' }
+                          { type:'vimeo',   id:'76979871' }
+     gallery[]   : { src, alt, caption, orientation, hue }
+                   omit `src` and a tinted placeholder is
+                   drawn in its place
+     details     : the credit block shown with the project
+     hue         : 0–360, tints every generated placeholder
      ---------------------------------------------------- */
   const S = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/';
 
+  /* Builds gallery entries, filling in the defaults so each
+     still only has to name what makes it different. */
+  function stills(hue, items) {
+    return items.map(function (item, i) {
+      return {
+        src: item.src || null,
+        caption: item.caption || '',
+        alt: item.alt || item.caption || 'Photograph',
+        orientation: item.orientation || 'landscape',
+        hue: item.hue == null ? (hue + i * 7) % 360 : item.hue
+      };
+    });
+  }
+
   const projects = [
+    /* ---------------- weddings ---------------- */
     {
       id: 'harper-elliot',
-      orientation: 'horizontal',
       title: 'Harper & Elliot',
-      client: 'Somerset, England',
-      category: 'wedding',
-      format: 'film',
+      category: 'weddings',
       year: '2026',
       featured: true,
       wide: true,
       hue: 32,
-      blurb:
-        'A two-day celebration in a walled garden — shot on a single 35mm prime, cut to the vows.',
-      tags: ['Wedding film', 'Documentary', '6 min'],
-      video: { type: 'file', src: S + 'ForBiggerJoyrides.mp4' }
+      blurb: 'A two-day celebration in a walled garden — shot on a single 35mm prime, cut to the vows.',
+      tags: ['Wedding film', 'Photography', '6 min'],
+      films: [
+        {
+          title: 'Highlight film',
+          duration: '6:12',
+          orientation: 'horizontal',
+          video: { type: 'file', src: S + 'ForBiggerJoyrides.mp4' }
+        },
+        {
+          title: 'Vertical share cut',
+          duration: '0:58',
+          orientation: 'vertical',
+          video: { type: 'file', src: S + 'ForBiggerFun.mp4' }
+        }
+      ],
+      gallery: stills(32, [
+        { caption: 'Getting ready, north light', orientation: 'portrait' },
+        { caption: 'The walk down' },
+        { caption: 'Vows' },
+        { caption: 'Confetti', orientation: 'portrait' },
+        { caption: 'Long table, golden hour' },
+        { caption: 'First dance' }
+      ]),
+      details: {
+        client: 'Harper & Elliot',
+        location: 'Somerset, England',
+        date: 'June 2026',
+        services: ['Wedding film', 'Photography'],
+        deliverables: ['6-minute highlight film', '520 edited images', '60-second vertical cut', 'Feature edit, 24 min'],
+        credits: [
+          { role: 'Director & lead film', name: 'Zangrid Studios' },
+          { role: 'Photography', name: 'Zangrid Studios' },
+          { role: 'Second shooter', name: 'Add name' },
+          { role: 'Colour', name: 'Add name' },
+          { role: 'Venue', name: 'Add venue' }
+        ]
+      }
     },
     {
       id: 'noor-and-sam',
-      orientation: 'horizontal',
       title: 'Noor & Sam',
-      client: 'Lake Como, Italy',
-      category: 'wedding',
-      format: 'film',
+      category: 'weddings',
       year: '2026',
       featured: true,
       hue: 18,
       blurb: 'Destination weekend, golden-hour ceremony, a highlight film that runs like a trailer.',
       tags: ['Wedding film', 'Destination', '4 min'],
-      video: { type: 'file', src: S + 'ForBiggerEscapes.mp4' }
-    },
-    {
-      id: 'the-daylight-room',
-      title: 'The Daylight Room',
-      client: 'Studio portraits',
-      category: 'portrait',
-      format: 'photo',
-      year: '2026',
-      portrait: true,
-      hue: 210,
-      blurb: 'Natural-light portrait sittings — one window, one wall, forty frames that feel like you.',
-      tags: ['Portrait', 'Studio', '40 images']
-    },
-    {
-      id: 'atlas-coffee',
-      orientation: 'horizontal',
-      title: 'Atlas Coffee Roasters',
-      client: 'Brand campaign',
-      category: 'brand',
-      format: 'film',
-      year: '2026',
-      featured: true,
-      hue: 26,
-      blurb: 'Origin-to-cup brand film plus a stills library for a national wholesale launch.',
-      tags: ['Brand film', 'Stills', '90 sec'],
-      video: { type: 'file', src: S + 'ForBiggerMeltdowns.mp4' }
-    },
-    {
-      id: 'kindred-skincare',
-      orientation: 'vertical',
-      title: 'Kindred Skincare',
-      client: 'UGC / paid social',
-      category: 'ugc',
-      format: 'film',
-      year: '2026',
-      featured: true,
-      portrait: true,
-      hue: 320,
-      blurb: 'Twelve vertical creator-style cuts built for paid social — three hooks, three edits each.',
-      tags: ['UGC', '9:16', '12 assets'],
-      video: { type: 'file', src: S + 'ForBiggerFun.mp4' }
-    },
-    {
-      id: 'field-notes',
-      title: 'Field Notes',
-      client: 'Editorial portraits',
-      category: 'portrait',
-      format: 'photo',
-      year: '2025',
-      hue: 150,
-      blurb: 'On-location editorial sittings for a founders series — shot across four cities in nine days.',
-      tags: ['Portrait', 'Editorial', 'On location']
-    },
-    {
-      id: 'north-rail',
-      orientation: 'horizontal',
-      title: 'North Rail',
-      client: 'Corporate brand',
-      category: 'brand',
-      format: 'film',
-      year: '2025',
-      featured: true,
-      wide: true,
-      hue: 205,
-      blurb: 'Recruitment film and photography refresh for a national infrastructure operator.',
-      tags: ['Brand film', 'Interviews', '3 min'],
-      video: { type: 'file', src: S + 'ForBiggerBlazes.mp4' }
+      films: [
+        {
+          title: 'Highlight film',
+          duration: '4:03',
+          orientation: 'horizontal',
+          video: { type: 'file', src: S + 'ForBiggerEscapes.mp4' }
+        }
+      ],
+      gallery: stills(18, [
+        { caption: 'Arrival by water' },
+        { caption: 'Ceremony terrace', orientation: 'portrait' },
+        { caption: 'Speeches' },
+        { caption: 'Lake, last light' }
+      ]),
+      details: {
+        client: 'Noor & Sam',
+        location: 'Lake Como, Italy',
+        date: 'May 2026',
+        services: ['Wedding film', 'Photography'],
+        deliverables: ['4-minute highlight film', '380 edited images', 'Welcome party coverage'],
+        credits: [
+          { role: 'Director & lead film', name: 'Zangrid Studios' },
+          { role: 'Photography', name: 'Zangrid Studios' },
+          { role: 'Planner', name: 'Add name' }
+        ]
+      }
     },
     {
       id: 'ivy-and-june',
       title: 'Ivy & June',
-      client: 'City hall elopement',
-      category: 'wedding',
-      format: 'photo',
+      category: 'weddings',
       year: '2025',
       hue: 42,
       blurb: 'Two hours, two witnesses, one very good pub afterwards. Reportage from start to finish.',
-      tags: ['Elopement', 'Reportage', '120 images']
+      tags: ['Elopement', 'Reportage', '120 images'],
+      gallery: stills(42, [
+        { caption: 'City hall steps', orientation: 'portrait' },
+        { caption: 'The register' },
+        { caption: 'Rain, briefly' },
+        { caption: 'The pub' },
+        { caption: 'Last light on the walk home', orientation: 'portrait' }
+      ]),
+      details: {
+        client: 'Ivy & June',
+        location: 'London',
+        date: 'October 2025',
+        services: ['Photography'],
+        deliverables: ['120 edited images', 'Print release'],
+        credits: [{ role: 'Photography', name: 'Zangrid Studios' }]
+      }
+    },
+
+    /* ---------------- fashion ---------------- */
+    {
+      id: 'maren-atelier',
+      title: 'Maren Atelier',
+      category: 'fashion',
+      year: '2026',
+      featured: true,
+      wide: true,
+      hue: 340,
+      blurb: 'Lookbook film and campaign stills for an independent label’s first flagship collection.',
+      tags: ['Lookbook', 'Campaign', '2 min'],
+      films: [
+        {
+          title: 'Collection film',
+          duration: '2:10',
+          orientation: 'horizontal',
+          video: { type: 'file', src: S + 'Sintel.mp4' }
+        },
+        {
+          title: 'Runway teaser',
+          duration: '0:22',
+          orientation: 'vertical',
+          video: { type: 'file', src: S + 'ForBiggerBlazes.mp4' }
+        }
+      ],
+      gallery: stills(340, [
+        { caption: 'Look 01', orientation: 'portrait' },
+        { caption: 'Look 04', orientation: 'portrait' },
+        { caption: 'Fabric detail' },
+        { caption: 'Look 09', orientation: 'portrait' },
+        { caption: 'Backstage' },
+        { caption: 'Campaign frame' }
+      ]),
+      details: {
+        client: 'Maren Atelier',
+        location: 'London studio',
+        date: 'February 2026',
+        services: ['Fashion film', 'Campaign stills'],
+        deliverables: ['2-minute collection film', '60 retouched images', '6 vertical cut-downs'],
+        credits: [
+          { role: 'Direction', name: 'Zangrid Studios' },
+          { role: 'Photography', name: 'Zangrid Studios' },
+          { role: 'Styling', name: 'Add name' },
+          { role: 'Hair & make-up', name: 'Add name' },
+          { role: 'Models', name: 'Add agency' }
+        ]
+      }
     },
     {
-      id: 'sable-studio',
-      orientation: 'vertical',
-      title: 'Sable Studio',
-      client: 'Product & UGC',
-      category: 'ugc',
-      format: 'film',
+      id: 'nocturne-edit',
+      title: 'Nocturne Edit',
+      category: 'fashion',
       year: '2025',
-      portrait: true,
-      hue: 275,
-      blurb: 'Monthly always-on content drop — unboxings, demos and testimonials in creator voice.',
-      tags: ['UGC', 'Retainer', 'Monthly'],
-      video: { type: 'file', src: S + 'WeAreGoingOnBullrun.mp4' }
+      hue: 265,
+      blurb: 'An after-dark editorial shot on location in one night, available light only.',
+      tags: ['Editorial', 'Night', '24 images'],
+      gallery: stills(265, [
+        { caption: 'Underpass', orientation: 'portrait' },
+        { caption: 'Neon, wide' },
+        { caption: 'Coat detail', orientation: 'portrait' },
+        { caption: 'Last frame, 4am' }
+      ]),
+      details: {
+        client: 'Editorial commission',
+        location: 'Manchester',
+        date: 'November 2025',
+        services: ['Editorial photography'],
+        deliverables: ['24 retouched images', 'Print licence, 12 months'],
+        credits: [
+          { role: 'Photography', name: 'Zangrid Studios' },
+          { role: 'Styling', name: 'Add name' }
+        ]
+      }
+    },
+
+    /* ---------------- events ---------------- */
+    {
+      id: 'assembly-24',
+      title: 'Assembly ’26',
+      category: 'events',
+      year: '2026',
+      featured: true,
+      hue: 200,
+      blurb: 'Two-day conference: same-day recap film, next-morning gallery, speaker reels for every session.',
+      tags: ['Conference', 'Recap film', 'Same-day'],
+      films: [
+        {
+          title: 'Day one recap',
+          duration: '1:45',
+          orientation: 'horizontal',
+          video: { type: 'file', src: S + 'ForBiggerMeltdowns.mp4' }
+        },
+        {
+          title: 'Speaker reel',
+          duration: '0:40',
+          orientation: 'vertical',
+          video: { type: 'file', src: S + 'ForBiggerEscapes.mp4' }
+        }
+      ],
+      gallery: stills(200, [
+        { caption: 'Keynote' },
+        { caption: 'Registration' },
+        { caption: 'Breakout room', orientation: 'portrait' },
+        { caption: 'The corridor track' },
+        { caption: 'Closing party' }
+      ]),
+      details: {
+        client: 'Assembly Conference',
+        location: 'Barbican, London',
+        date: 'March 2026',
+        services: ['Event film', 'Event photography'],
+        deliverables: ['Same-day recap film', '600 edited images', '18 speaker reels'],
+        credits: [
+          { role: 'Lead film', name: 'Zangrid Studios' },
+          { role: 'Photography', name: 'Zangrid Studios' },
+          { role: 'Edit on site', name: 'Add name' }
+        ]
+      }
     },
     {
       id: 'lantern-house',
       title: 'Lantern House',
-      client: 'Hospitality brand',
-      category: 'brand',
-      format: 'photo',
+      category: 'events',
       year: '2025',
       hue: 12,
-      blurb: 'Interiors, food and team photography for a restaurant group opening its second site.',
-      tags: ['Brand stills', 'Hospitality', '180 images']
+      blurb: 'Opening night for a restaurant group’s second site — service documented without stopping it.',
+      tags: ['Launch', 'Hospitality', '180 images'],
+      gallery: stills(12, [
+        { caption: 'Pass, first service' },
+        { caption: 'Room at 8pm' },
+        { caption: 'Detail, plated' , orientation: 'portrait' },
+        { caption: 'Front of house' }
+      ]),
+      details: {
+        client: 'Lantern House',
+        location: 'Bristol',
+        date: 'September 2025',
+        services: ['Event photography', 'Interiors'],
+        deliverables: ['180 edited images', 'Press-ready selects'],
+        credits: [{ role: 'Photography', name: 'Zangrid Studios' }]
+      }
+    },
+
+    /* ---------------- portraits ---------------- */
+    {
+      id: 'the-daylight-room',
+      title: 'The Daylight Room',
+      category: 'portraits',
+      year: '2026',
+      featured: true,
+      hue: 210,
+      blurb: 'Natural-light portrait sittings — one window, one wall, forty frames that feel like you.',
+      tags: ['Studio', 'Daylight', '40 images'],
+      gallery: stills(210, [
+        { caption: 'Sitting 01', orientation: 'portrait' },
+        { caption: 'Sitting 02', orientation: 'portrait' },
+        { caption: 'Hands' },
+        { caption: 'Sitting 03', orientation: 'portrait' },
+        { caption: 'Wide, room' },
+        { caption: 'Sitting 04', orientation: 'portrait' }
+      ]),
+      details: {
+        client: 'Studio sittings',
+        location: 'Zangrid studio, London',
+        date: 'Ongoing',
+        services: ['Portrait photography'],
+        deliverables: ['25–60 retouched images', 'Web and print files'],
+        credits: [{ role: 'Photography', name: 'Zangrid Studios' }]
+      }
+    },
+    {
+      id: 'hartwell-founders',
+      title: 'Hartwell Founders',
+      category: 'portraits',
+      year: '2025',
+      hue: 175,
+      blurb: 'Vertical talking-head series for a hiring campaign — twelve founders, one afternoon each.',
+      tags: ['Founder series', 'Interview', '9:16'],
+      films: [
+        {
+          title: 'Founder film, vertical',
+          duration: '1:12',
+          orientation: 'vertical',
+          video: { type: 'file', src: S + 'ForBiggerMeltdowns.mp4' }
+        }
+      ],
+      gallery: stills(175, [
+        { caption: 'Portrait, seated', orientation: 'portrait' },
+        { caption: 'At the desk' },
+        { caption: 'Environmental', orientation: 'portrait' }
+      ]),
+      details: {
+        client: 'Hartwell',
+        location: 'Four cities, UK',
+        date: 'August 2025',
+        services: ['Portrait photography', 'Interview film'],
+        deliverables: ['12 founder films (9:16)', '120 retouched images', 'Subtitled masters'],
+        credits: [
+          { role: 'Direction', name: 'Zangrid Studios' },
+          { role: 'Sound', name: 'Add name' }
+        ]
+      }
     },
     {
       id: 'first-light',
-      orientation: 'horizontal',
       title: 'First Light',
-      client: 'Couples session',
-      category: 'portrait',
-      format: 'film',
+      category: 'portraits',
       year: '2025',
       hue: 190,
       blurb: 'A sunrise couples session on the coast, cut short and slow for the way it actually felt.',
       tags: ['Couples', 'Short film', '90 sec'],
-      video: { type: 'file', src: S + 'ElephantsDream.mp4' }
+      films: [
+        {
+          title: 'Session film',
+          duration: '1:30',
+          orientation: 'horizontal',
+          video: { type: 'file', src: S + 'ElephantsDream.mp4' }
+        }
+      ],
+      gallery: stills(190, [
+        { caption: 'First light' },
+        { caption: 'On the rocks', orientation: 'portrait' },
+        { caption: 'Walking back' }
+      ]),
+      details: {
+        client: 'Private session',
+        location: 'Northumberland coast',
+        date: 'July 2025',
+        services: ['Couples film', 'Photography'],
+        deliverables: ['90-second film', '45 edited images'],
+        credits: [{ role: 'Direction & photography', name: 'Zangrid Studios' }]
+      }
     },
+
+    /* ---------------- commercial ---------------- */
     {
-      id: 'maren-atelier',
-      orientation: 'horizontal',
-      title: 'Maren Atelier',
-      client: 'Fashion label',
-      category: 'brand',
-      format: 'film',
-      year: '2024',
-      hue: 340,
-      blurb: 'Lookbook film and campaign stills for an independent label’s first flagship collection.',
-      tags: ['Campaign', 'Fashion', '2 min'],
-      video: { type: 'file', src: S + 'Sintel.mp4' }
+      id: 'kindred-skincare',
+      title: 'Kindred Skincare',
+      category: 'commercial',
+      year: '2026',
+      featured: true,
+      hue: 320,
+      blurb: 'Twelve vertical creator-style cuts built for paid social — three hooks, three edits each.',
+      tags: ['UGC', 'Paid social', '12 assets'],
+      films: [
+        {
+          title: 'Hook A — routine',
+          duration: '0:24',
+          orientation: 'vertical',
+          video: { type: 'file', src: S + 'ForBiggerFun.mp4' }
+        },
+        {
+          title: 'Hook B — before / after',
+          duration: '0:18',
+          orientation: 'vertical',
+          video: { type: 'file', src: S + 'ForBiggerEscapes.mp4' }
+        }
+      ],
+      gallery: stills(320, [
+        { caption: 'Product, top light' },
+        { caption: 'In hand', orientation: 'portrait' },
+        { caption: 'Texture' }
+      ]),
+      details: {
+        client: 'Kindred Skincare',
+        location: 'London',
+        date: 'January 2026',
+        services: ['UGC', 'Product stills'],
+        deliverables: ['12 vertical videos', '20 lifestyle stills', '6-month paid usage'],
+        credits: [
+          { role: 'Direction', name: 'Zangrid Studios' },
+          { role: 'Creator', name: 'Add name' }
+        ]
+      }
     },
     {
       id: 'fold-and-co',
-      orientation: 'vertical',
       title: 'Fold & Co',
-      client: 'Product launch',
-      category: 'brand',
-      format: 'film',
+      category: 'commercial',
       year: '2026',
-      portrait: true,
       hue: 95,
       blurb: 'Vertical launch teasers cut three ways for TikTok, Reels and Shorts on the same shoot day.',
-      tags: ['Vertical', '9:16', '6 assets'],
-      video: { type: 'file', src: S + 'ForBiggerBlazes.mp4' }
+      tags: ['Product launch', 'Vertical', '6 assets'],
+      films: [
+        {
+          title: 'Launch teaser',
+          duration: '0:20',
+          orientation: 'vertical',
+          video: { type: 'file', src: S + 'ForBiggerBlazes.mp4' }
+        }
+      ],
+      gallery: stills(95, [
+        { caption: 'Pack shot' },
+        { caption: 'Unboxing frame', orientation: 'portrait' },
+        { caption: 'Set, wide' }
+      ]),
+      details: {
+        client: 'Fold & Co',
+        location: 'Studio',
+        date: 'April 2026',
+        services: ['Product film', 'Stills'],
+        deliverables: ['6 vertical assets', '15 product stills'],
+        credits: [{ role: 'Direction & photography', name: 'Zangrid Studios' }]
+      }
     },
     {
       id: 'ovett-cycles',
-      orientation: 'vertical',
       title: 'Ovett Cycles',
-      client: 'Paid social',
-      category: 'ugc',
-      format: 'film',
+      category: 'commercial',
       year: '2025',
-      portrait: true,
       hue: 250,
       blurb: 'Hook-led vertical ads shot handheld — the winning cut ran for two quarters straight.',
-      tags: ['UGC', 'Paid social', '9:16'],
-      video: { type: 'file', src: S + 'ForBiggerEscapes.mp4' }
+      tags: ['Advertising', 'Vertical', 'Performance'],
+      films: [
+        {
+          title: 'Winning cut',
+          duration: '0:15',
+          orientation: 'vertical',
+          video: { type: 'file', src: S + 'ForBiggerEscapes.mp4' }
+        },
+        {
+          title: 'Long-form edit',
+          duration: '1:05',
+          orientation: 'horizontal',
+          video: { type: 'file', src: S + 'WeAreGoingOnBullrun.mp4' }
+        }
+      ],
+      gallery: stills(250, [{ caption: 'Ride, dawn' }, { caption: 'Frame detail', orientation: 'portrait' }]),
+      details: {
+        client: 'Ovett Cycles',
+        location: 'Peak District',
+        date: 'June 2025',
+        services: ['Advertising film'],
+        deliverables: ['9 vertical ads', '1 long-form edit', '12-month paid usage'],
+        credits: [{ role: 'Direction', name: 'Zangrid Studios' }]
+      }
     },
-    {
-      id: 'vows-vertical',
-      orientation: 'vertical',
-      title: 'Vows, Vertical',
-      client: 'Wedding social cuts',
-      category: 'wedding',
-      format: 'film',
-      year: '2026',
-      portrait: true,
-      hue: 20,
-      blurb: 'A 60-second vertical cut of the ceremony, delivered the morning after for the couple to share.',
-      tags: ['Wedding', 'Vertical', '60 sec'],
-      video: { type: 'file', src: S + 'ForBiggerJoyrides.mp4' }
-    },
-    {
-      id: 'hartwell-founders',
-      orientation: 'vertical',
-      title: 'Hartwell Founders',
-      client: 'Founder series',
-      category: 'portrait',
-      format: 'film',
-      year: '2025',
-      portrait: true,
-      hue: 175,
-      blurb: 'Vertical talking-head series for a hiring campaign — twelve founders, one afternoon each.',
-      tags: ['Portrait', 'Interview', '9:16'],
-      video: { type: 'file', src: S + 'ForBiggerMeltdowns.mp4' }
-    }
-  ];
 
-  const categories = [
-    { id: 'all', label: 'All work' },
-    { id: 'wedding', label: 'Weddings' },
-    { id: 'portrait', label: 'Portraits' },
-    { id: 'brand', label: 'Brand' },
-    { id: 'ugc', label: 'UGC' }
+    /* ---------------- brand ---------------- */
+    {
+      id: 'atlas-coffee',
+      title: 'Atlas Coffee Roasters',
+      category: 'brand',
+      year: '2026',
+      featured: true,
+      wide: true,
+      hue: 26,
+      blurb: 'Origin-to-cup brand film plus a stills library for a national wholesale launch.',
+      tags: ['Brand film', 'Stills library', '90 sec'],
+      films: [
+        {
+          title: 'Brand film',
+          duration: '1:30',
+          orientation: 'horizontal',
+          video: { type: 'file', src: S + 'ForBiggerMeltdowns.mp4' }
+        },
+        {
+          title: 'Social cut-down',
+          duration: '0:15',
+          orientation: 'vertical',
+          video: { type: 'file', src: S + 'ForBiggerFun.mp4' }
+        }
+      ],
+      gallery: stills(26, [
+        { caption: 'Roastery floor' },
+        { caption: 'Green beans, detail', orientation: 'portrait' },
+        { caption: 'The pour' },
+        { caption: 'Team portrait', orientation: 'portrait' },
+        { caption: 'Packaging, flat lay' }
+      ]),
+      details: {
+        client: 'Atlas Coffee Roasters',
+        location: 'Roastery, Leeds',
+        date: 'January 2026',
+        services: ['Brand film', 'Photography'],
+        deliverables: ['90-second hero film', '6 social cut-downs', '80 edited stills'],
+        credits: [
+          { role: 'Direction', name: 'Zangrid Studios' },
+          { role: 'Photography', name: 'Zangrid Studios' },
+          { role: 'Sound mix', name: 'Add name' }
+        ]
+      }
+    },
+    {
+      id: 'north-rail',
+      title: 'North Rail',
+      category: 'brand',
+      year: '2025',
+      featured: true,
+      hue: 205,
+      blurb: 'Recruitment film and photography refresh for a national infrastructure operator.',
+      tags: ['Recruitment', 'Interviews', '3 min'],
+      films: [
+        {
+          title: 'Recruitment film',
+          duration: '3:02',
+          orientation: 'horizontal',
+          video: { type: 'file', src: S + 'ForBiggerBlazes.mp4' }
+        }
+      ],
+      gallery: stills(205, [
+        { caption: 'Depot, first light' },
+        { caption: 'Engineer portrait', orientation: 'portrait' },
+        { caption: 'Track team' },
+        { caption: 'Control room' }
+      ]),
+      details: {
+        client: 'North Rail',
+        location: 'Six depots, UK',
+        date: 'November 2025',
+        services: ['Brand film', 'Photography'],
+        deliverables: ['3-minute film', '200 image library', 'Subtitled and audio-described masters'],
+        credits: [
+          { role: 'Direction', name: 'Zangrid Studios' },
+          { role: 'Interviews', name: 'Add name' }
+        ]
+      }
+    },
+    {
+      id: 'sable-studio',
+      title: 'Sable Studio',
+      category: 'brand',
+      year: '2025',
+      hue: 275,
+      blurb: 'Monthly always-on content drop — unboxings, demos and testimonials in creator voice.',
+      tags: ['Retainer', 'Always-on', 'Monthly'],
+      films: [
+        {
+          title: 'Monthly drop, edit 03',
+          duration: '0:35',
+          orientation: 'vertical',
+          video: { type: 'file', src: S + 'WeAreGoingOnBullrun.mp4' }
+        }
+      ],
+      gallery: stills(275, [{ caption: 'Set, monthly shoot' }, { caption: 'Product in use', orientation: 'portrait' }]),
+      details: {
+        client: 'Sable Studio',
+        location: 'London',
+        date: 'Retainer, 2025–',
+        services: ['Content retainer'],
+        deliverables: ['12 videos per month', '40 stills per month', 'Shared asset library'],
+        credits: [{ role: 'Production', name: 'Zangrid Studios' }]
+      }
+    }
   ];
 
   /* ---- packages --------------------------------------
