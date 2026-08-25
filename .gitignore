@@ -1,0 +1,12 @@
+.DS_Store
+Thumbs.db
+node_modules/
+*.log
+
+# Large source media — keep exports only
+*.mov
+*.MOV
+*.mp4
+*.webm
+!assets/video/hero-loop.mp4
+!assets/video/hero-loop.webm

@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enquire — Zangrid Studios</title>
+<meta name="description" content="Check availability and start an enquiry with Zangrid Studios for wedding, portrait, brand or UGC photo and film.">
+<meta name="theme-color" content="#0b0b0c">
+<link rel="canonical" href="https://zangridstudios.com/enquiry.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Enquire — Zangrid Studios">
+<meta property="og:description" content="Tell us about your date, your brand or your campaign. We reply within two working days.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="index.html">Zangrid <span>Studios</span></a>
+    <nav class="nav__links" aria-label="Primary">
+      <div class="nav__drop">
+        <button class="nav__drop-btn" type="button" aria-expanded="false" aria-haspopup="true">Work</button>
+        <div class="nav__panel">
+          <a data-nav="work.html" href="work.html">All work<small>Every project, filterable</small></a>
+          <a href="work.html#films">Horizontal films<small>16:9 cinema cuts</small></a>
+          <a href="work.html#vertical">Vertical films<small>9:16 for social</small></a>
+        </div>
+      </div>
+      <a class="nav__link" data-nav="packages.html" href="packages.html">Packages</a>
+      <div class="nav__drop">
+        <button class="nav__drop-btn" type="button" aria-expanded="false" aria-haspopup="true">Studio</button>
+        <div class="nav__panel">
+          <a data-nav="about.html" href="about.html">The studio<small>Crew, approach, kit</small></a>
+          <a data-nav="reviews.html" href="reviews.html">Client reviews<small>What clients said</small></a>
+        </div>
+      </div>
+      <a class="btn btn--ghost" href="enquiry.html">Enquire</a>
+    </nav>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="menu" id="site-menu" aria-hidden="true">
+  <nav aria-label="Mobile">
+    <a class="menu__link" href="index.html">Home</a>
+    <a class="menu__link" href="work.html">Work</a>
+    <div class="menu__sub">
+      <a href="work.html#films">Horizontal films</a>
+      <a href="work.html#vertical">Vertical films</a>
+    </div>
+    <a class="menu__link" href="packages.html">Packages</a>
+    <a class="menu__link" href="about.html">Studio</a>
+    <div class="menu__sub">
+      <a href="reviews.html">Client reviews</a>
+    </div>
+    <a class="menu__link" href="enquiry.html">Enquire</a>
+  </nav>
+  <div class="menu__meta">
+    <a href="mailto:hello@zangridstudios.com" data-site="email">hello@zangridstudios.com</a>
+    <a href="https://instagram.com/zangridstudios" target="_blank" rel="noopener">Instagram</a>
+    <span data-site="location">London · Travelling worldwide</span>
+  </div>
+</div>
+
+<main id="main">
+  <section class="hero hero--inner grain" aria-label="Enquiry">
+    <div class="hero__media"><div class="hero__fallback" aria-hidden="true"></div></div>
+    <div class="hero__scrim" aria-hidden="true"></div>
+    <div class="wrap hero__body">
+      <p class="eyebrow">Enquiries</p>
+      <h1 style="font-size:var(--step-3);max-width:18ch;margin-top:1rem">Tell us what you want filmed.</h1>
+      <p class="lede" style="margin-top:1.5rem">Every enquiry is read by a person, and answered within two working
+        days — including the ones that turn out not to be a fit.</p>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <div class="split split--sticky" style="--nav-h:4.5rem">
+
+      <!-- ---- sidebar ---- -->
+      <aside>
+        <div class="pkg" data-package-summary style="margin-bottom:1.5rem">
+          <p class="eyebrow">Your enquiry</p>
+          <p class="muted">Pick a service and we will show what that package includes right here.</p>
+        </div>
+        <div style="display:grid;gap:1rem">
+          <p class="muted" style="font-size:var(--step--1)">Prefer to write directly?</p>
+          <a class="link-u" href="mailto:hello@zangridstudios.com" data-site="email">hello@zangridstudios.com</a>
+          <a class="link-u" href="tel:+447700900118" data-site="phone">+44 7700 900 118</a>
+          <p class="muted" style="font-size:var(--step--1)" data-site="location">London · Travelling worldwide</p>
+        </div>
+      </aside>
+
+      <!-- ---- form ---- -->
+      <div>
+        <form class="form" data-enquiry novalidate>
+          <div class="form__status" data-form-status aria-live="polite"></div>
+
+          <div class="field">
+            <label for="name">Your name <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="name" name="name" type="text" autocomplete="name" required
+                   placeholder="Alex Zangrid">
+            <p class="error" aria-live="polite"></p>
+          </div>
+
+          <div class="grid grid--2" style="gap:1.75rem">
+            <div class="field">
+              <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="email" name="email" type="email" autocomplete="email" required
+                     placeholder="you@example.com">
+              <p class="error" aria-live="polite"></p>
+            </div>
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input class="input" id="phone" name="phone" type="tel" autocomplete="tel"
+                     placeholder="Optional, but faster">
+              <p class="error" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <fieldset class="fieldset">
+            <legend>What do you need? <span class="req" aria-hidden="true">*</span></legend>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="service" value="wedding"><span>Wedding</span></label>
+              <label class="chip"><input type="radio" name="service" value="portrait"><span>Portrait</span></label>
+              <label class="chip"><input type="radio" name="service" value="brand"><span>Brand</span></label>
+              <label class="chip"><input type="radio" name="service" value="ugc"><span>UGC</span></label>
+              <label class="chip"><input type="radio" name="service" value="other"><span>Something else</span></label>
+            </div>
+            <p class="error" aria-live="polite"></p>
+          </fieldset>
+
+          <div class="field">
+            <label for="package">Package</label>
+            <select class="select" id="package" name="package">
+              <option value="">No preference / not sure yet</option>
+            </select>
+            <p class="error" aria-live="polite"></p>
+          </div>
+
+          <div class="grid grid--2" style="gap:1.75rem">
+            <div class="field">
+              <label for="date">Date</label>
+              <input class="input" id="date" name="date" type="date">
+              <p class="error" aria-live="polite"></p>
+            </div>
+            <div class="field">
+              <label for="location">Location</label>
+              <input class="input" id="location" name="location" type="text"
+                     placeholder="Venue, city or “still deciding”">
+              <p class="error" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="grid grid--2" style="gap:1.75rem">
+            <div class="field">
+              <label for="budget">Budget</label>
+              <select class="select" id="budget" name="budget">
+                <option value="">Rather not say yet</option>
+                <option>Under £500</option>
+                <option>£500 – £1,500</option>
+                <option>£1,500 – £3,000</option>
+                <option>£3,000 – £6,000</option>
+                <option>£6,000+</option>
+                <option>Monthly retainer</option>
+              </select>
+              <p class="error" aria-live="polite"></p>
+            </div>
+            <div class="field">
+              <label for="source">How did you find us?</label>
+              <select class="select" id="source" name="source">
+                <option value="">—</option>
+                <option>Instagram</option>
+                <option>A past client</option>
+                <option>A venue or planner</option>
+                <option>Search</option>
+                <option>Somewhere else</option>
+              </select>
+              <p class="error" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="message">Tell us about it <span class="req" aria-hidden="true">*</span></label>
+            <textarea class="textarea" id="message" name="message" required
+              placeholder="The day, the brand, the campaign — what it is, who it is for, and what you want to end up with."></textarea>
+            <p class="error" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label class="check">
+              <input type="checkbox" name="consent" required>
+              <span>I am happy for Zangrid Studios to contact me about this enquiry. We never share details
+                with anyone else.</span>
+            </label>
+            <p class="error" aria-live="polite"></p>
+          </div>
+
+          <!-- spam trap -->
+          <div class="hp" aria-hidden="true">
+            <label for="company">Company</label>
+            <input class="hp-input" id="company" name="company" type="text" tabindex="-1" autocomplete="off">
+          </div>
+
+          <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+            <button class="btn btn--solid" type="submit" data-submit>Send enquiry</button>
+            <p class="muted" style="font-size:var(--step--1)">Replies within two working days.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--line wrap">
+    <div class="split">
+      <div>
+        <p class="eyebrow reveal">What happens next</p>
+        <h2 class="reveal" style="margin-top:.75rem">After you press send</h2>
+      </div>
+      <div class="rows" style="border-top:0">
+        <div class="row reveal"><p class="row__n">01</p><h3 class="row__t" style="font-size:var(--step-1)">We check the date</h3><p class="row__d">Within two working days you get availability, a straight price and a couple of questions.</p></div>
+        <div class="row reveal"><p class="row__n">02</p><h3 class="row__t" style="font-size:var(--step-1)">A call, if it helps</h3><p class="row__d">Twenty minutes on a call or a coffee. No pitch deck, no pressure.</p></div>
+        <div class="row reveal"><p class="row__n">03</p><h3 class="row__t" style="font-size:var(--step-1)">Hold the date</h3><p class="row__d">An agreement and a 25% booking fee, and the date is yours.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="index.html">Zangrid <span>Studios</span></a>
+        <p class="muted" style="margin-top:1rem;max-width:24ch" data-site="tagline">Photo &amp; film for weddings, portraits, brands and creators.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="work.html">Work</a></li>
+          <li><a href="packages.html">Packages</a></li>
+          <li><a href="about.html">Studio</a></li>
+          <li><a href="reviews.html">Reviews</a></li>
+          <li><a href="enquiry.html">Enquire</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <ul>
+          <li><a href="packages.html#wedding">Weddings</a></li>
+          <li><a href="packages.html#portrait">Portraits</a></li>
+          <li><a href="packages.html#brand">Brand</a></li>
+          <li><a href="packages.html#ugc">UGC</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@zangridstudios.com" data-site="email">hello@zangridstudios.com</a></li>
+          <li><a href="tel:+447700900118" data-site="phone">+44 7700 900 118</a></li>
+          <li><span data-site="location">London · Travelling worldwide</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Follow</h4>
+        <ul>
+          <li><a href="https://instagram.com/zangridstudios" data-site="instagram" data-site-href-only target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://vimeo.com/zangridstudios" data-site="vimeo" data-site-href-only target="_blank" rel="noopener">Vimeo</a></li>
+          <li><a href="https://youtube.com/@zangridstudios" data-site="youtube" data-site-href-only target="_blank" rel="noopener">YouTube</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bar">
+      <span>&copy; <span data-year>2026</span> Zangrid Studios. All rights reserved.</span>
+      <span>Made in London.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/packages.js"></script>
+<script src="assets/js/enquiry.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

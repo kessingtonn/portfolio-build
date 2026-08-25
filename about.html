@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio — Zangrid Studios</title>
+<meta name="description" content="Who Zangrid Studios is, how we shoot, what we shoot on, and what it is like to work with us.">
+<meta name="theme-color" content="#0b0b0c">
+<link rel="canonical" href="https://zangridstudios.com/about.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Studio — Zangrid Studios">
+<meta property="og:description" content="A small photo and film crew working across weddings, portraits, brand and UGC.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="index.html">Zangrid <span>Studios</span></a>
+    <nav class="nav__links" aria-label="Primary">
+      <div class="nav__drop">
+        <button class="nav__drop-btn" type="button" aria-expanded="false" aria-haspopup="true">Work</button>
+        <div class="nav__panel">
+          <a data-nav="work.html" href="work.html">All work<small>Every project, filterable</small></a>
+          <a href="work.html#films">Horizontal films<small>16:9 cinema cuts</small></a>
+          <a href="work.html#vertical">Vertical films<small>9:16 for social</small></a>
+        </div>
+      </div>
+      <a class="nav__link" data-nav="packages.html" href="packages.html">Packages</a>
+      <div class="nav__drop">
+        <button class="nav__drop-btn" type="button" aria-expanded="false" aria-haspopup="true">Studio</button>
+        <div class="nav__panel">
+          <a data-nav="about.html" href="about.html">The studio<small>Crew, approach, kit</small></a>
+          <a data-nav="reviews.html" href="reviews.html">Client reviews<small>What clients said</small></a>
+        </div>
+      </div>
+      <a class="btn btn--ghost" href="enquiry.html">Enquire</a>
+    </nav>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="menu" id="site-menu" aria-hidden="true">
+  <nav aria-label="Mobile">
+    <a class="menu__link" href="index.html">Home</a>
+    <a class="menu__link" href="work.html">Work</a>
+    <div class="menu__sub">
+      <a href="work.html#films">Horizontal films</a>
+      <a href="work.html#vertical">Vertical films</a>
+    </div>
+    <a class="menu__link" href="packages.html">Packages</a>
+    <a class="menu__link" href="about.html">Studio</a>
+    <div class="menu__sub">
+      <a href="reviews.html">Client reviews</a>
+    </div>
+    <a class="menu__link" href="enquiry.html">Enquire</a>
+  </nav>
+  <div class="menu__meta">
+    <a href="mailto:hello@zangridstudios.com" data-site="email">hello@zangridstudios.com</a>
+    <a href="https://instagram.com/zangridstudios" target="_blank" rel="noopener">Instagram</a>
+    <span data-site="location">London · Travelling worldwide</span>
+  </div>
+</div>
+
+<main id="main">
+  <section class="hero hero--inner grain" aria-label="About the studio">
+    <div class="hero__media"><div class="hero__fallback" aria-hidden="true"></div></div>
+    <div class="hero__scrim" aria-hidden="true"></div>
+    <div class="wrap hero__body">
+      <p class="eyebrow">The studio</p>
+      <h1 style="font-size:var(--step-3);max-width:20ch;margin-top:1rem">A small crew, deliberately.</h1>
+      <p class="lede" style="margin-top:1.5rem">Zangrid Studios is four people who shoot, cut and deliver everything
+        themselves. No account managers, no handoffs, no one on your wedding day you have never met.</p>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <div class="split split--sticky">
+      <div>
+        <p class="eyebrow reveal">Our approach</p>
+      </div>
+      <div>
+        <h2 class="reveal">We would rather miss a shot than stage one.</h2>
+        <p class="lede reveal" data-delay="1" style="margin-top:2rem">
+          The studio started with wedding films and grew into brand work because the same instinct applies: find the
+          real moment, light it honestly, and cut it before it outstays its welcome.
+        </p>
+        <p class="reveal muted" data-delay="2" style="margin-top:1.5rem;max-width:60ch">
+          In practice that means we plan hard so we can improvise on the day. We arrive early, we know the running
+          order, and we have already worked out where the light will be at four in the afternoon. Then we mostly
+          disappear — and what comes back looks like the day you actually had, not a version of it arranged for
+          the camera.
+        </p>
+        <p class="reveal muted" data-delay="3" style="margin-top:1.5rem;max-width:60ch">
+          Shooting stills and motion together is the other half of it. One crew, one set of decisions, one look
+          across the photographs and the film. It costs less than hiring two teams and it argues with itself far less.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight" id="clients">
+    <div class="wrap">
+      <p class="eyebrow reveal" style="margin-bottom:1.5rem">Brands &amp; companies we have worked with</p>
+    </div>
+    <div class="marquee logos" data-clients aria-label="Selected clients"></div>
+    <div class="marquee logos logos--reverse" data-clients aria-hidden="true"></div>
+  </section>
+
+  <section class="section wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow reveal">The crew</p>
+        <h2 class="reveal" style="margin-top:.75rem">Who turns up</h2>
+      </div>
+    </div>
+    <div class="grid grid--2">
+      <figure class="figure reveal">
+        <div class="card__poster ratio-4-5" style="--h:35" role="img" aria-label="Portrait placeholder"></div>
+        <figcaption>Founder · Director &amp; lead filmmaker</figcaption>
+      </figure>
+      <figure class="figure reveal" data-delay="1">
+        <div class="card__poster ratio-4-5" style="--h:200" role="img" aria-label="Portrait placeholder"></div>
+        <figcaption>Lead photographer</figcaption>
+      </figure>
+      <figure class="figure reveal" data-delay="2">
+        <div class="card__poster ratio-4-5" style="--h:280" role="img" aria-label="Portrait placeholder"></div>
+        <figcaption>Second shooter &amp; colourist</figcaption>
+      </figure>
+      <figure class="figure reveal" data-delay="3">
+        <div class="card__poster ratio-4-5" style="--h:120" role="img" aria-label="Portrait placeholder"></div>
+        <figcaption>Producer &amp; UGC lead</figcaption>
+      </figure>
+    </div>
+    <p class="muted reveal" style="margin-top:1.5rem;font-size:var(--step--1)">Replace these placeholders with crew
+      portraits — see README.md.</p>
+  </section>
+
+  <section class="section section--line wrap">
+    <div class="split">
+      <div>
+        <p class="eyebrow reveal">Kit</p>
+        <h2 class="reveal" style="margin-top:.75rem">What we shoot on</h2>
+      </div>
+      <div class="rows" style="border-top:0">
+        <div class="row reveal"><p class="row__n">01</p><h3 class="row__t" style="font-size:var(--step-1)">Cameras</h3><p class="row__d">Full-frame mirrorless bodies, dual card slots, always two per operator. Everything backed up twice before we leave.</p></div>
+        <div class="row reveal"><p class="row__n">02</p><h3 class="row__t" style="font-size:var(--step-1)">Glass</h3><p class="row__d">Fast primes for the quiet moments, a workhorse zoom for the ceremony, and a macro for the details that matter to you.</p></div>
+        <div class="row reveal"><p class="row__n">03</p><h3 class="row__t" style="font-size:var(--step-1)">Sound</h3><p class="row__d">Lavaliers on the vows and the speeches, a backup recorder on the registrar. Your film is cut to real audio, not library music alone.</p></div>
+        <div class="row reveal"><p class="row__n">04</p><h3 class="row__t" style="font-size:var(--step-1)">Light</h3><p class="row__d">Natural first. Small continuous LEDs when the room gives us nothing — never a flash in the middle of your first dance.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--line wrap">
+    <p class="eyebrow reveal" style="margin-bottom:2rem">Kind words</p>
+    <div class="grid grid--3" data-testimonials></div>
+  </section>
+
+  <section class="cta wrap">
+    <p class="eyebrow reveal">Say hello</p>
+    <h2 class="reveal" style="max-width:16ch">Come and tell us about it.</h2>
+    <a class="btn btn--solid reveal" data-delay="1" href="enquiry.html">Start an enquiry</a>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="index.html">Zangrid <span>Studios</span></a>
+        <p class="muted" style="margin-top:1rem;max-width:24ch" data-site="tagline">Photo &amp; film for weddings, portraits, brands and creators.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="work.html">Work</a></li>
+          <li><a href="packages.html">Packages</a></li>
+          <li><a href="about.html">Studio</a></li>
+          <li><a href="reviews.html">Reviews</a></li>
+          <li><a href="enquiry.html">Enquire</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <ul>
+          <li><a href="packages.html#wedding">Weddings</a></li>
+          <li><a href="packages.html#portrait">Portraits</a></li>
+          <li><a href="packages.html#brand">Brand</a></li>
+          <li><a href="packages.html#ugc">UGC</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@zangridstudios.com" data-site="email">hello@zangridstudios.com</a></li>
+          <li><a href="tel:+447700900118" data-site="phone">+44 7700 900 118</a></li>
+          <li><span data-site="location">London · Travelling worldwide</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Follow</h4>
+        <ul>
+          <li><a href="https://instagram.com/zangridstudios" data-site="instagram" data-site-href-only target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://vimeo.com/zangridstudios" data-site="vimeo" data-site-href-only target="_blank" rel="noopener">Vimeo</a></li>
+          <li><a href="https://youtube.com/@zangridstudios" data-site="youtube" data-site-href-only target="_blank" rel="noopener">YouTube</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bar">
+      <span>&copy; <span data-year>2026</span> Zangrid Studios. All rights reserved.</span>
+      <span>Made in London.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/packages.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

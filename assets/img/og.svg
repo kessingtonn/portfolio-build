@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#17120c"/>
+      <stop offset="0.55" stop-color="#0b0b0c"/>
+      <stop offset="1" stop-color="#14141a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <text x="80" y="300" fill="#f4f1ec" font-family="Georgia, 'Times New Roman', serif" font-size="86">Zangrid Studios</text>
+  <text x="80" y="360" fill="#86837d" font-family="Helvetica, Arial, sans-serif" font-size="26" letter-spacing="6">PHOTO &#38; FILM</text>
+  <text x="80" y="470" fill="#c9a227" font-family="Helvetica, Arial, sans-serif" font-size="22" letter-spacing="5">WEDDINGS · PORTRAITS · BRAND · UGC</text>
+  <rect x="80" y="392" width="120" height="2" fill="#c9a227"/>
+</svg>
