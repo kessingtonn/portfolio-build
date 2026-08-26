@@ -1,58 +1,158 @@
-# Adding your photos, videos and project details
+# Adding your photos and videos — step by step
 
-Every placeholder on the site comes from one file: **`assets/js/data.js`**. There is no CMS and no
-database — you edit that file, save, refresh. This guide shows exactly what to change.
+Every image and every film on this site is listed in one file: **`assets/js/data.js`**. You copy
+files into `assets/`, point at them from that file, and refresh the browser. No CMS, no build step,
+no database.
 
-- [Where the files go](#1-where-the-files-go)
-- [Replace a photo placeholder](#2-replace-a-photo-placeholder)
-- [Replace a video placeholder](#3-replace-a-video-placeholder)
-- [A complete project, field by field](#4-a-complete-project-field-by-field)
-- [Which field shows up where](#5-which-field-shows-up-where)
-- [Export settings that keep the site fast](#6-export-settings-that-keep-the-site-fast)
-- [Adding or renaming a category](#7-adding-or-renaming-a-category)
-- [The hero background clip](#8-the-hero-background-clip)
-- [Checklist before you publish](#9-checklist-before-you-publish)
+Work through the steps in order, or jump to whichever slot you're filling:
 
----
-
-## 1. Where the files go
-
-Keep one folder per project. The slug in the folder name should match the project's `id`:
-
-```
-assets/
-  img/
-    work/
-      harper-elliot/
-        cover.jpg          ← tile image for the project
-        01-getting-ready.jpg
-        02-ceremony.jpg
-        03-confetti.jpg
-      atlas-coffee/
-        cover.jpg
-        01-roastery.jpg
-    clients/
-      atlas-coffee.svg     ← optional real client logos
-  video/
-    hero-loop.mp4          ← the home page background clip
-    work/
-      harper-elliot/
-        highlight.mp4
-        highlight-preview.mp4   ← 6-second silent clip for hover
-        vertical.mp4
-```
-
-Nothing enforces this layout — it is just the one the paths in this guide assume. Lowercase names
-with hyphens, no spaces, keeps every host happy.
+| Step | What you're filling | Where it shows |
+| ---- | ------------------- | -------------- |
+| [0](#step-0--set-up-once) | Set up once | — |
+| [1](#step-1--export-your-files) | Export your files | everywhere |
+| [2](#step-2--the-home-page-hero-clip) | Home hero clip | the big looping background |
+| [3](#step-3--category-hero-stills) | Category hero stills | top of each category page |
+| [4](#step-4--photographs) | Photographs | photo grids + the viewer |
+| [5](#step-5--films) | Films | 16:9 and 9:16 reels |
+| [6](#step-6--hover-previews-and-film-posters) | Previews & posters | film tiles |
+| [7](#step-7--crew-portraits) | Crew portraits | the studio page |
+| [8](#step-8--client-logos) | Client logos | the moving brand strip |
+| [9](#step-9--project-covers) | Project covers | tiles on work + home |
+| [10](#step-10--favicon-and-share-image) | Favicon & share image | browser tab, link previews |
+| [11](#step-11--check-your-work) | Check your work | — |
 
 ---
 
-## 2. Replace a photo placeholder
+## Step 0 — set up once
 
-Right now a gallery entry with no `src` draws a tinted rectangle. Add `src` and the real photograph
-takes its place — nothing else changes.
+Get the site running so you can see each change as you make it:
 
-**Before** (placeholder):
+```bash
+git clone -b claude/zangrid-studios-portfolio-ax32no https://github.com/kessingtonn/portfolio-build
+cd portfolio-build
+python3 -m http.server 8000
+```
+
+Open http://localhost:8000. Leave that running. Open `assets/js/data.js` in your editor — that's
+the only file you'll edit in the steps below.
+
+Two rules that save pain later:
+
+- **Filenames**: lowercase, hyphens, no spaces — `01-first-look.jpg`, never `01 First Look.JPG`.
+- **Paths are relative to the site root**, always starting `assets/…`, never `/assets/…` or
+  `C:\Users\…`.
+
+After any edit: save the file, then **hard refresh** the browser (`Ctrl`/`Cmd` + `Shift` + `R`).
+A normal refresh may serve you the old cached `data.js`.
+
+---
+
+## Step 1 — export your files
+
+Do this once for a batch of media, before you start pointing at it.
+
+**Photographs** — long edge 2000px, quality 80, sRGB, metadata stripped:
+
+```bash
+# a whole folder at once
+mkdir -p assets/img/work/harper-elliot
+for f in ~/exports/harper-elliot/*.jpg; do
+  magick "$f" -resize 2000x2000\> -quality 80 -strip \
+    "assets/img/work/harper-elliot/$(basename "$f")"
+done
+```
+
+No ImageMagick? Lightroom or Capture One: export JPEG, quality 80, long edge 2000px, sRGB.
+Aim for under 400 KB per file.
+
+**Films** — 1080p H.264, `+faststart` so playback begins before the download finishes:
+
+```bash
+mkdir -p assets/video/work/harper-elliot
+ffmpeg -i ~/exports/highlight-master.mov -vf scale=1920:-2 \
+  -c:v libx264 -crf 21 -preset slow -c:a aac -b:a 160k -movflags +faststart \
+  assets/video/work/harper-elliot/highlight.mp4
+```
+
+Vertical cuts export vertical — `scale=1080:-2` from a 9:16 master. Never crop a landscape master
+to fake it; the tiles crop to fill and it shows.
+
+**If a film is over ~50 MB, don't self-host it.** Put it on YouTube or Vimeo and use step 5's
+option B or C. (GitHub Pages also rejects individual files over 100 MB.)
+
+---
+
+## Step 2 — the home page hero clip
+
+The looping background behind "Days worth keeping".
+
+1. Export a 10–20 second silent loop, 1920×1080, under ~5 MB:
+
+   ```bash
+   ffmpeg -i source.mov -t 15 -an -vf scale=1920:-2 \
+     -c:v libx264 -crf 26 -movflags +faststart assets/video/hero-loop.mp4
+   ```
+
+2. Optional but worth it — a WebM half the size for browsers that take it:
+
+   ```bash
+   ffmpeg -i assets/video/hero-loop.mp4 -c:v libvpx-vp9 -crf 34 -b:v 0 -an \
+     assets/video/hero-loop.webm
+   ```
+
+3. In `data.js`, find `site.heroVideo` and swap the commented lines for the sample:
+
+   ```js
+   heroVideo: [
+     { src: 'assets/video/hero-loop.webm', type: 'video/webm' },
+     { src: 'assets/video/hero-loop.mp4',  type: 'video/mp4'  }
+   ]
+   ```
+
+   The list is tried in order — first one the browser can play wins. Delete the
+   `commondatastorage.googleapis.com` entry; that's the sample clip.
+
+4. Refresh the home page. The clip should fade in over the gradient within a second or two.
+
+**Pick a clip that loops without a jarring cut** — slow camera movement, no hard scene changes, and
+ideally the first and last frames are similar. It sits behind text, so avoid busy centres.
+
+---
+
+## Step 3 — category hero stills
+
+The band at the top of `fashion.html`, `weddings.html` and the other four.
+
+1. Export one wide frame per category, ~2400px wide, into `assets/img/heroes/`.
+
+2. In `data.js`, find the `categories` array and set `heroImage` on the one you're filling:
+
+   ```js
+   {
+     id: 'weddings',
+     heroImage: 'assets/img/heroes/weddings.jpg',
+     heroVideo: null,
+     label: 'Weddings',
+     …
+   }
+   ```
+
+3. To use a moving backdrop instead, set `heroVideo` to a silent 8–15 second loop
+   (`assets/video/heroes/weddings.mp4`). Keep `heroImage` set too — it becomes the poster frame
+   while the clip loads, and what visitors with reduced-motion enabled see.
+
+Leave both `null` and the hero keeps the animated gradient — which looks deliberate, not broken.
+
+---
+
+## Step 4 — photographs
+
+This is the big one: the photo grids on each category page and on `work.html`.
+
+Each project in `data.js` has a `gallery`. Right now the entries have no `src`, so each one draws a
+tinted placeholder. Add `src` and your photograph takes its place.
+
+**Before:**
 
 ```js
 gallery: stills(32, [
@@ -61,15 +161,15 @@ gallery: stills(32, [
 ])
 ```
 
-**After** (your photographs):
+**After:**
 
 ```js
 gallery: stills(32, [
   {
     src: 'assets/img/work/harper-elliot/01-getting-ready.jpg',
-    caption: 'Getting ready, north light',   // shown under the tile and in the viewer
-    alt: 'Bride at a window in morning light', // for screen readers and SEO
-    orientation: 'portrait'                   // portrait = tall tile, landscape = wide (default)
+    caption: 'Getting ready, north light',       // sits under the tile, and in the viewer
+    alt: 'Bride at a window in morning light',   // screen readers + image search
+    orientation: 'portrait'                      // tall tile; omit for a wide one
   },
   {
     src: 'assets/img/work/harper-elliot/02-walk.jpg',
@@ -79,43 +179,35 @@ gallery: stills(32, [
 ])
 ```
 
-`stills()` is a small helper at the top of the portfolio section — it fills in the defaults so each
-entry only names what makes it different. You can also write plain objects if you prefer.
+Notes that matter:
 
-**Mixed sets are fine.** Real photographs and placeholders can sit side by side while you work
-through a backlog; the ones with `src` show the photo, the ones without keep the tinted block.
-
-**Project tile image.** The tile in the work grid uses, in order: `cover`, the first gallery image
-with a `src`, then a placeholder. To set it explicitly:
-
-```js
-cover: 'assets/img/work/harper-elliot/cover.jpg',
-```
+- **`orientation: 'portrait'`** makes a tall tile that spans two grid rows. Everything else is
+  wide. Mixing them is what gives the grid its rhythm — aim for roughly one portrait in three.
+- **Add as many entries as you like.** Ten to twenty per project reads well; the grid lazy-loads so
+  a long set costs nothing until it's scrolled to.
+- **Mixed sets are fine.** Entries with `src` show photographs, entries without keep their
+  placeholder, so you can publish a project before every frame is retouched.
+- **Order is the order they appear**, and the viewer's arrow keys move through them in that order.
 
 ---
 
-## 3. Replace a video placeholder
+## Step 5 — films
 
-Films live in a `films: []` array, so one project can hold as many cuts as you like — a highlight
-film, a vertical share, a teaser. Each film gets its own tile in the 16:9 or 9:16 reel.
+Each project has a `films` array. One entry per cut — a highlight film and a vertical share are two
+entries in the same project, and each gets its own tile in the matching reel.
 
 ### Option A — self-hosted (best quality, you own the file)
 
 ```js
 films: [
   {
-    title: 'Highlight film',
-    duration: '6:12',
-    orientation: 'horizontal',                                   // horizontal | vertical
-    poster: 'assets/img/work/harper-elliot/film-still.jpg',      // optional tile still
-    preview: 'assets/video/work/harper-elliot/highlight-preview.mp4', // plays on hover
+    title: 'Highlight film',        // tile caption
+    duration: '6:12',               // shown on the tile badge
+    orientation: 'horizontal',      // horizontal → 16:9 reel, vertical → 9:16 reel
     video: { type: 'file', src: 'assets/video/work/harper-elliot/highlight.mp4' }
   }
 ]
 ```
-
-Self-hosting means the file counts against your hosting bandwidth. Fine for a handful of trimmed
-films; for a dozen full features, use B or C.
 
 ### Option B — YouTube
 
@@ -123,9 +215,8 @@ films; for a dozen full features, use B or C.
 video: { type: 'youtube', id: 'dQw4w9WgXcQ' }
 ```
 
-The `id` is the part after `v=` in `https://www.youtube.com/watch?v=dQw4w9WgXcQ`. The player only
-loads when someone clicks — no YouTube script runs before that — and the viewer gets a
-"Watch on YouTube" link automatically.
+The id is the part after `v=` in `https://www.youtube.com/watch?v=dQw4w9WgXcQ`. Nothing from
+YouTube loads until someone clicks play, and the viewer gets a "Watch on YouTube" link for free.
 
 ### Option C — Vimeo
 
@@ -133,213 +224,169 @@ loads when someone clicks — no YouTube script runs before that — and the vie
 video: { type: 'vimeo', id: '76979871' }
 ```
 
-The `id` is the number in `https://vimeo.com/76979871`. Vimeo Pro accounts can also give you a
-direct `.mp4` link, which you can use with `type: 'file'` instead.
+The id is the number in `https://vimeo.com/76979871`. On a Vimeo Pro account you can also grab a
+direct `.mp4` link and use option A with it.
 
-### Hover previews
+**Which to choose:** self-host trimmed highlight films and vertical cuts (fast, no branding, no
+recommendations at the end). Put full-length features and anything over ~50 MB on Vimeo or YouTube.
 
-YouTube and Vimeo embeds **cannot** be used as hover previews, so those films need their own
-`preview` file. Self-hosted films fall back to the film itself if you do not set one — fine for a
-short clip, wasteful for a 6-minute master, so export a small dedicated preview:
+Add `link: 'https://vimeo.com/…'` to any film to point its "watch full film" button somewhere
+specific — for example, the self-hosted highlight linking to the full feature on Vimeo.
+
+---
+
+## Step 6 — hover previews and film posters
+
+**Previews** are the muted clips that play inside a tile when someone hovers it.
+
+- Self-hosted films reuse their own file automatically — fine for a 20-second cut, wasteful for a
+  6-minute master.
+- YouTube and Vimeo films **cannot** preview from their embed, so they need their own file.
+
+Export a small dedicated preview and point at it:
 
 ```bash
 ffmpeg -i highlight.mp4 -ss 00:00:12 -t 6 -an -vf scale=960:-2 \
   -c:v libx264 -crf 30 -movflags +faststart highlight-preview.mp4
 ```
 
-Previews are skipped automatically on touch devices, on data-saver, on slow connections, and for
-visitors who ask for reduced motion — so they never cost a mobile visitor anything.
-
----
-
-## 4. A complete project, field by field
-
-This is a whole entry with every option filled in. Copy it, change the values, drop it into the
-`projects` array in `assets/js/data.js`.
-
 ```js
 {
-  /* --- identity --- */
-  id: 'harper-elliot',            // unique slug; also the anchor link on the category page
-  title: 'Harper & Elliot',       // shown on the tile and in the viewer
-  category: 'weddings',           // fashion | events | weddings | portraits | commercial | brand
-  year: '2026',                   // shown next to the category on the tile
-
-  /* --- presentation --- */
-  featured: true,                 // include on the home page grid
-  wide: true,                     // tile spans two columns in the work grid
-  hue: 32,                        // 0–360, tints any remaining placeholders
-  blurb: 'A two-day celebration in a walled garden — shot on a single 35mm prime.',
-  tags: ['Wedding film', 'Photography', '6 min'],   // chips in the viewer
-  cover: 'assets/img/work/harper-elliot/cover.jpg',
-
-  /* --- films --- */
-  films: [
-    {
-      title: 'Highlight film',
-      duration: '6:12',
-      orientation: 'horizontal',
-      poster: 'assets/img/work/harper-elliot/film-still.jpg',
-      preview: 'assets/video/work/harper-elliot/highlight-preview.mp4',
-      video: { type: 'file', src: 'assets/video/work/harper-elliot/highlight.mp4' },
-      link: 'https://vimeo.com/yourchannel/harper-elliot'   // optional "watch full film" target
-    },
-    {
-      title: 'Vertical share cut',
-      duration: '0:58',
-      orientation: 'vertical',
-      video: { type: 'file', src: 'assets/video/work/harper-elliot/vertical.mp4' }
-    }
-  ],
-
-  /* --- photographs --- */
-  gallery: stills(32, [
-    { src: 'assets/img/work/harper-elliot/01.jpg', caption: 'Getting ready', alt: '…', orientation: 'portrait' },
-    { src: 'assets/img/work/harper-elliot/02.jpg', caption: 'Vows', alt: '…' }
-  ]),
-
-  /* --- the details block --- */
-  details: {
-    client: 'Harper & Elliot',
-    location: 'Somerset, England',
-    date: 'June 2026',
-    services: ['Wedding film', 'Photography'],
-    deliverables: [
-      '6-minute highlight film',
-      '520 edited images',
-      '60-second vertical cut'
-    ],
-    credits: [
-      { role: 'Director & lead film', name: 'Zangrid Studios' },
-      { role: 'Photography',          name: 'Zangrid Studios' },
-      { role: 'Second shooter',       name: 'Sam Okafor' },
-      { role: 'Venue',                name: 'The Walled Garden' }
-    ]
-  }
+  title: 'Highlight film',
+  duration: '6:12',
+  orientation: 'horizontal',
+  preview: 'assets/video/work/harper-elliot/highlight-preview.mp4',
+  poster:  'assets/img/work/harper-elliot/film-still.jpg',
+  video:   { type: 'file', src: 'assets/video/work/harper-elliot/highlight.mp4' }
 }
 ```
 
-Everything except `id`, `title` and `category` is optional:
+Pick six seconds that read at a glance with no sound. Previews never load until hover, and are
+skipped entirely on touch devices, on data-saver, on slow connections, and for anyone with
+reduced-motion enabled — so they cost mobile visitors nothing.
 
-- no `films` → the project is photography only
-- no `gallery` → film only
-- no `details` → the details block is skipped for that project
-- no `src` anywhere → placeholders, exactly as the site ships today
-
----
-
-## 5. Which field shows up where
-
-| Field | Where it appears |
-| ----- | ---------------- |
-| `title`, `year`, `category` | Project tile caption, viewer title |
-| `cover` / first `gallery` image | Project tile image |
-| `blurb` | Under the tile title in the viewer, and in the details block |
-| `tags` | Chips in the viewer |
-| `films[].title`, `.duration` | Film tile caption and the 16:9 / 9:16 badge |
-| `films[].orientation` | Which reel it lands in, and the shape of the player |
-| `films[].poster` | Film tile image |
-| `films[].preview` | The clip that plays on hover |
-| `gallery[].caption` | Under each photo tile, and in the photo viewer |
-| `gallery[].alt` | Screen readers, image SEO |
-| `gallery[].orientation` | `portrait` gives a tall tile in the grid |
-| `details.client/location/date/services` | The spec list on the category page |
-| `details.deliverables` | The "Delivered" list |
-| `details.credits` | The credits column |
-| `featured` | Whether it appears on the home page |
-
----
-
-## 6. Export settings that keep the site fast
-
-**Photographs** — long edge 2000px, JPEG quality 80, sRGB, metadata stripped:
+**Posters** are the still shown on a film tile before hover. Without one the tile uses a tinted
+placeholder. Grab a frame from the film itself:
 
 ```bash
-# one file
-magick input.jpg -resize 2000x2000\> -quality 80 -strip 01.jpg
-
-# a whole folder
-for f in raw/*.jpg; do
-  magick "$f" -resize 2000x2000\> -quality 80 -strip "assets/img/work/harper-elliot/$(basename "$f")"
-done
+ffmpeg -i highlight.mp4 -ss 00:00:24 -frames:v 1 -q:v 2 film-still.jpg
 ```
-
-Aim for under 400 KB per image. The grid loads images lazily, so a long gallery is fine — a single
-6 MB export is not.
-
-**Films** — 1080p, H.264, faststart so playback begins before the file finishes downloading:
-
-```bash
-# horizontal master
-ffmpeg -i master.mov -vf scale=1920:-2 -c:v libx264 -crf 21 -preset slow \
-  -c:a aac -b:a 160k -movflags +faststart highlight.mp4
-
-# vertical cut (9:16 — export it vertical, don't crop a landscape master)
-ffmpeg -i vertical-master.mov -vf scale=1080:-2 -c:v libx264 -crf 21 -preset slow \
-  -c:a aac -b:a 160k -movflags +faststart vertical.mp4
-```
-
-If a film is over ~50 MB, put it on YouTube or Vimeo and use `type: 'youtube'` / `type: 'vimeo'`
-instead. Some hosts (GitHub Pages included) also cap individual files at 100 MB.
 
 ---
 
-## 7. Adding or renaming a category
+## Step 7 — crew portraits
 
-Categories live at the top of the portfolio section in `data.js`:
+1. Export one 4:5 portrait per person, ~1600px long edge, into `assets/img/crew/`.
+2. In `data.js`, find `crew` near the top and fill in the real names, roles and paths:
+
+   ```js
+   const crew = [
+     { name: 'Ada Zangrid', role: 'Director & lead filmmaker',
+       photo: 'assets/img/crew/ada.jpg', hue: 35 },
+     { name: 'Sam Okafor', role: 'Lead photographer',
+       photo: 'assets/img/crew/sam.jpg', hue: 200 }
+   ];
+   ```
+
+Add or remove people freely — the grid on `about.html` follows the array. `hue` only tints the
+placeholder for anyone without a photo yet.
+
+---
+
+## Step 8 — client logos
+
+The moving strip on the home, studio and reviews pages.
+
+1. Put single-colour SVGs (or transparent PNGs at 2x) in `assets/img/clients/`.
+2. Add `logo` to the matching entry in `clients`:
+
+   ```js
+   { name: 'Atlas Coffee', note: 'Brand film + stills',
+     logo: 'assets/img/clients/atlas-coffee.svg' }
+   ```
+
+Entries without a `logo` set the name as a typographic wordmark instead — which looks intentional,
+so there's no rush to collect every file. `note` is the tooltip on hover.
+
+Only list clients who are happy to be named.
+
+---
+
+## Step 9 — project covers
+
+The tile image for a project on `work.html` and the home page.
+
+The cover falls back to the first gallery photograph with a `src`, so after step 4 most projects
+already have one. To choose a different frame:
 
 ```js
-{
-  id: 'automotive',            // used in `category:` on projects and in URLs
-  label: 'Automotive',         // nav and filter label
-  page: 'automotive.html',     // the page that gets generated
-  title: 'Automotive',         // the <h1>
-  lede: 'One line under the title.',
-  intro: 'A paragraph for the top of the page.'
-}
+cover: 'assets/img/work/harper-elliot/cover.jpg',
 ```
 
-Then regenerate the pages:
+Covers are cropped to 16:10 (or 4:5 on projects marked `portrait: true`), so leave a little room
+around the subject.
+
+---
+
+## Step 10 — favicon and share image
+
+- **Favicon** — replace `assets/img/favicon.svg` with your own mark, keeping the filename. SVG is
+  ideal; a 512×512 PNG works if you also change the `<link rel="icon">` type in each page's head.
+- **Share image** — replace `assets/img/og.svg` with a 1200×630 JPEG or PNG, then update the
+  `og:image` line in `index.html`:
+
+  ```html
+  <meta property="og:image" content="assets/img/og.jpg">
+  ```
+
+  That's the picture that shows when the site is pasted into WhatsApp, Slack or a text message.
+
+---
+
+## Step 11 — check your work
 
 ```bash
-node tools/build-categories.js
+node tools/check-media.js
 ```
 
-That rewrites one HTML page per category from `templates/category.template.html`. **Edit the
-template, never the generated pages** — `fashion.html`, `events.html`, `weddings.html`,
-`portraits.html`, `commercial.html` and `brand.html` are overwritten every time the script runs.
+It reads `data.js`, checks every path, and prints four numbers:
 
-Add the new page to the nav dropdown in each page's `<nav class="nav__links">` block, or leave it
-reachable from the work page filters and the category strip.
+```
+     2  in place
+   125  still placeholder
+    37  sample clips to replace
+     0  MISSING FILES
+```
+
+- **MISSING FILES** — a path is set but the file isn't there. These show as broken media on the live
+  site, so fix them first; the report names each one.
+- **sample clips to replace** — still pointing at the Google demo videos.
+- **still placeholder** — empty slots. Nothing broken, just work outstanding.
+
+Then look at the site itself: hard refresh, click through each category page, hover a film tile,
+open a photograph and arrow through the set.
+
+If an image doesn't appear, it's almost always one of three things: a typo in the path, a
+capitalised file extension (`.JPG` vs `.jpg`), or a leading slash on the path. Open the browser
+console (`F12`) — a 404 there names the exact path it tried.
 
 ---
 
-## 8. The hero background clip
+## Where each field ends up
 
-The home page hero reads `site.heroVideo` in `data.js` — a list of sources, first playable one wins:
+| Field in `data.js` | What it fills |
+| ------------------ | ------------- |
+| `site.heroVideo[]` | Home page looping background |
+| `categories[].heroImage` / `.heroVideo` | Top of that category's page |
+| `projects[].cover` | The project's tile on work + home |
+| `projects[].gallery[].src` | Photo grids and the photo viewer |
+| `projects[].gallery[].caption` / `.alt` | Tile caption; screen readers |
+| `projects[].films[].video` | What plays when a film tile is clicked |
+| `projects[].films[].preview` | The clip that plays on hover |
+| `projects[].films[].poster` | The film tile's still |
+| `projects[].films[].orientation` | Which reel it lands in, and the player's shape |
+| `crew[].photo` | Portraits on the studio page |
+| `clients[].logo` | The moving brand strip |
 
-```js
-heroVideo: [
-  { src: 'assets/video/hero-loop.webm', type: 'video/webm' },
-  { src: 'assets/video/hero-loop.mp4',  type: 'video/mp4'  }
-]
-```
-
-10–20 seconds, no audio track, under about 5 MB. Delete the remote sample entry once yours is in
-place. Behind it sits an animated gradient that covers the moments before the video paints and any
-case where it cannot play at all, so the hero never looks broken.
-
----
-
-## 9. Checklist before you publish
-
-- [ ] Replace the sample film URLs (`commondatastorage.googleapis.com`) with your own work
-- [ ] Drop in `assets/video/hero-loop.mp4` and uncomment it in `site.heroVideo`
-- [ ] Set real `src` values on the galleries you want live
-- [ ] Write `alt` text on every photograph
-- [ ] Update `site.email`, `site.phone`, `site.location` and the social links
-- [ ] Set `site.formEndpoint` so enquiries reach your inbox
-- [ ] Replace the placeholder crew portraits on `about.html`
-- [ ] Check the prices on `packages.html` are yours
-- [ ] Swap the client names in `clients` for real ones (add `logo:` paths if you have the files)
-- [ ] Run `node tools/build-categories.js` if you changed any category
+Anything not listed here is text — captions, credits, deliverables, prices — and works the same
+way: change it in `data.js`, refresh, done.

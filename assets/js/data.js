@@ -46,6 +46,17 @@ window.ZANGRID = (function () {
     ]
   };
 
+  /* ---- the crew --------------------------------------
+     Portraits on about.html. Add `photo` to replace the
+     placeholder; 4:5 (portrait) crops best.
+     ---------------------------------------------------- */
+  const crew = [
+    { name: 'Founder', role: 'Director & lead filmmaker', photo: null, hue: 35 },
+    { name: 'Lead photographer', role: 'Photography', photo: null, hue: 200 },
+    { name: 'Second shooter', role: 'Camera & colour', photo: null, hue: 280 },
+    { name: 'Producer', role: 'Production & content', photo: null, hue: 120 }
+  ];
+
   /* ---- brands & clients ------------------------------
      Feeds the moving logo strip. Give a `logo` path to use
      a real logo file; without one the name is set as a
@@ -72,6 +83,10 @@ window.ZANGRID = (function () {
   const categories = [
     {
       id: 'fashion',
+      /* hero backdrop — a still, or a silent clip that loops.
+         Suggested: a runway or campaign frame. */
+      heroImage: null,   // 'assets/img/heroes/fashion.jpg'
+      heroVideo: null,   // 'assets/video/heroes/fashion.mp4'
       label: 'Fashion',
       page: 'fashion.html',
       title: 'Fashion',
@@ -82,6 +97,10 @@ window.ZANGRID = (function () {
     },
     {
       id: 'events',
+      /* hero backdrop — a still, or a silent clip that loops.
+         Suggested: a room at full tilt. */
+      heroImage: null,   // 'assets/img/heroes/events.jpg'
+      heroVideo: null,   // 'assets/video/heroes/events.mp4'
       label: 'Events',
       page: 'events.html',
       title: 'Events',
@@ -92,6 +111,10 @@ window.ZANGRID = (function () {
     },
     {
       id: 'weddings',
+      /* hero backdrop — a still, or a silent clip that loops.
+         Suggested: a wide from a ceremony. */
+      heroImage: null,   // 'assets/img/heroes/weddings.jpg'
+      heroVideo: null,   // 'assets/video/heroes/weddings.mp4'
       label: 'Weddings',
       page: 'weddings.html',
       title: 'Weddings',
@@ -102,6 +125,10 @@ window.ZANGRID = (function () {
     },
     {
       id: 'portraits',
+      /* hero backdrop — a still, or a silent clip that loops.
+         Suggested: a favourite sitting. */
+      heroImage: null,   // 'assets/img/heroes/portraits.jpg'
+      heroVideo: null,   // 'assets/video/heroes/portraits.mp4'
       label: 'Portraits',
       page: 'portraits.html',
       title: 'Portraits',
@@ -112,6 +139,10 @@ window.ZANGRID = (function () {
     },
     {
       id: 'commercial',
+      /* hero backdrop — a still, or a silent clip that loops.
+         Suggested: a product or set still. */
+      heroImage: null,   // 'assets/img/heroes/commercial.jpg'
+      heroVideo: null,   // 'assets/video/heroes/commercial.mp4'
       label: 'Commercial',
       page: 'commercial.html',
       title: 'Commercial',
@@ -122,6 +153,10 @@ window.ZANGRID = (function () {
     },
     {
       id: 'brand',
+      /* hero backdrop — a still, or a silent clip that loops.
+         Suggested: a hero-film frame. */
+      heroImage: null,   // 'assets/img/heroes/brand.jpg'
+      heroVideo: null,   // 'assets/video/heroes/brand.mp4'
       label: 'Brand',
       page: 'brand.html',
       title: 'Brand',
@@ -1060,5 +1095,5 @@ window.ZANGRID = (function () {
     }
   ];
 
-  return { site, clients, projects, categories, packages, testimonials };
+  return { site, crew, clients, projects, categories, packages, testimonials };
 })();

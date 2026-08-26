@@ -592,6 +592,60 @@
       stat(years.length ? years[years.length - 1] : '—', 'Most recent');
   });
 
+  /* ---- inner-page hero backdrop ----------------------
+     A category can supply a still or a silent looping clip;
+     without one the animated gradient carries the hero.
+     -------------------------------------------------- */
+  $$('[data-hero-media]').forEach(function (host) {
+    const cat = category(host.getAttribute('data-hero-media'));
+    const hero = host.closest('.hero');
+    if (cat.heroVideo && !reducedMotion) {
+      const video = document.createElement('video');
+      video.src = cat.heroVideo;
+      video.muted = true;
+      video.loop = true;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.setAttribute('playsinline', '');
+      video.setAttribute('aria-hidden', 'true');
+      if (cat.heroImage) video.poster = cat.heroImage;
+      video.addEventListener('playing', function () {
+        video.classList.add('is-ready');
+        if (hero) hero.classList.add('is-playing');
+      });
+      host.insertBefore(video, host.firstChild);
+      const attempt = video.play();
+      if (attempt && attempt.catch) attempt.catch(function () {});
+    } else if (cat.heroImage) {
+      const img = document.createElement('img');
+      img.src = cat.heroImage;
+      img.alt = '';
+      img.className = 'is-ready';
+      host.insertBefore(img, host.firstChild);
+      if (hero) hero.classList.add('is-playing');
+    }
+  });
+
+  /* ---- the crew (studio page) ---- */
+  $$('[data-crew]').forEach(function (host) {
+    const list = DATA.crew || [];
+    host.innerHTML = list
+      .map(function (person, i) {
+        const media = person.photo
+          ? '<img class="ratio-4-5" src="' + escapeHtml(person.photo) + '" alt="' +
+            escapeHtml(person.name) + '" loading="lazy" decoding="async">'
+          : '<div class="card__poster ratio-4-5" style="--h:' + (person.hue || 40) +
+            '" role="img" aria-label="Portrait placeholder for ' + escapeHtml(person.name) + '"></div>';
+        return (
+          '<figure class="figure reveal" data-delay="' + (i % 4) + '">' + media +
+          '<figcaption>' + escapeHtml(person.name) +
+          (person.role ? ' · ' + escapeHtml(person.role) : '') + '</figcaption></figure>'
+        );
+      })
+      .join('');
+    finish(host);
+  });
+
   /* Numbered category rows (home page) */
   $$('[data-category-rows]').forEach(function (host) {
     host.innerHTML = CATS.map(function (c, i) {

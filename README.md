@@ -27,14 +27,19 @@ The primary nav uses two dropdowns — **Work** (all work, then the six categori
 (the studio / client reviews). They open on hover, on click, and with the keyboard (`ArrowDown`
 to enter, `Escape` to leave); the mobile menu lists the same links as sub-items.
 
-**New here? [`docs/MEDIA-GUIDE.md`](docs/MEDIA-GUIDE.md) walks through putting your own photos and
-videos into the placeholders, field by field.**
+**New here? [`docs/MEDIA-GUIDE.md`](docs/MEDIA-GUIDE.md) is a step-by-step walkthrough of putting
+your own photos and videos into every slot on the site. Check your progress any time with:**
+
+```bash
+node tools/check-media.js     # what's in place, what's still a placeholder, what's broken
+```
 
 ## Everything you edit lives in `assets/js/data.js`
 
 * `site` — studio name, email, phone, location, social links, form endpoint, hero fallback clip.
   Anything marked `data-site="email"` etc. in the HTML is filled from here, so changing the
   email once changes it everywhere.
+* `crew` — the portraits, names and roles on the studio page.
 * `clients` — the moving "brands & companies we have worked with" strip. Add
   `logo: 'assets/img/clients/name.svg'` to an entry to use a real logo file instead of the
   typographic wordmark; `note` becomes the tooltip.
