@@ -160,6 +160,23 @@ field (`company`) is dropped before sending.
 Package buttons deep-link into the form: `enquiry.html?service=brand&package=brand-story`
 preselects the service, the package and the sidebar summary.
 
+## Seeing it without deploying
+
+```bash
+python3 -m http.server 8000        # then open http://localhost:8000
+```
+
+Or bundle every page into one self-contained file you can email, open from a USB stick, or drop
+anywhere:
+
+```bash
+node tools/build-preview.js        # writes preview.html
+```
+
+`preview.html` inlines the CSS and JS and swaps pages with a small router, so all twelve pages work
+with no server behind it. It is a preview artefact — deploy the real multi-page site for anything
+public.
+
 ## Deploying
 
 Any static host works — the repo root *is* the site.
