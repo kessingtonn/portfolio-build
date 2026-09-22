@@ -23,6 +23,44 @@ Work through the steps in order, or jump to whichever slot you're filling:
 
 ---
 
+## The fast path: let the importer do it
+
+If you have a pile of files ready, you don't have to write any of this by hand:
+
+```bash
+node tools/import-media.js --scaffold    # creates a folder per project
+```
+
+Drop your photographs into `assets/img/work/<project-id>/` and your films into
+`assets/video/work/<project-id>/`, named however you like — `01-getting-ready.jpg`,
+`highlight-film.mp4`. Then:
+
+```bash
+node tools/import-media.js --dry-run     # shows exactly what it would wire up
+node tools/import-media.js               # writes it into data.js
+```
+
+It reads the files themselves, not just their names:
+
+- **Captions** come from filenames — `01-getting-ready.jpg` becomes "Getting ready".
+- **Portrait vs landscape** comes from the real pixel dimensions of each image.
+- **16:9 vs 9:16** and the **duration on each film tile** are read out of the MP4.
+- `cover.jpg` becomes the project's tile image.
+- `highlight-preview.mp4` becomes the hover preview for `highlight.mp4`.
+- `highlight-poster.jpg` becomes that film's still.
+- `assets/img/heroes/weddings.jpg` fills the weddings page hero; same for the other five.
+- Files in `assets/img/crew/` and `assets/img/clients/` are matched to people and clients by name.
+- `assets/video/hero-loop.mp4` (and `.webm`) become the home page background.
+
+`data.js` is backed up first and re-parsed afterwards; if anything doesn't come out valid, the
+original is put straight back. Run it as often as you like — it updates what it finds and leaves
+the rest alone, so you can import one project today and another next week.
+
+The steps below are the same job done by hand, and what to read when you want to change something
+the importer guessed.
+
+---
+
 ## Step 0 — set up once
 
 Get the site running so you can see each change as you make it:

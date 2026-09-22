@@ -31,8 +31,15 @@ to enter, `Escape` to leave); the mobile menu lists the same links as sub-items.
 your own photos and videos into every slot on the site. Check your progress any time with:**
 
 ```bash
-node tools/check-media.js     # what's in place, what's still a placeholder, what's broken
+node tools/import-media.js --scaffold   # make the folders, one per project
+#  … drop your photos and films into them …
+node tools/import-media.js --dry-run    # see what it would wire up
+node tools/import-media.js              # write it into data.js
+node tools/check-media.js               # what's in place, what's still missing
 ```
+
+The importer reads the files themselves: captions come from filenames, portrait/landscape from the
+real pixel dimensions, and 16:9 / 9:16 and film durations straight out of the MP4.
 
 ## Everything you edit lives in `assets/js/data.js`
 
