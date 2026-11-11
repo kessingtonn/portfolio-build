@@ -241,7 +241,9 @@
   function sendButtons(body) {
     return (
       '<div class="form__send">' +
-      '<a class="btn btn--gold" href="' + gmailFallback(body) + '" target="_blank" rel="noopener noreferrer">Send with Gmail</a>' +
+      '<a class="btn btn--gold" href="' + gmailFallback(body) + '" target="_blank" rel="noopener noreferrer"' +
+        ' data-gmail data-to="' + encodeURIComponent(INBOX) + '" data-su="' + encodeURIComponent(body._subject) +
+        '" data-body="' + encodeURIComponent(emailLines(body)) + '">Send with Gmail</a>' +
       '<a class="btn btn--glass" href="' + mailtoFallback(body) + '">Use my email app</a>' +
       '</div>'
     );

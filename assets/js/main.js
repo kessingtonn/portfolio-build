@@ -1533,6 +1533,35 @@
       $$('.reveal', host).forEach((el) => el.classList.add('is-in'));
     });
 
+    /* "Gmail" buttons: on a phone, open the Gmail APP with the message
+       ready; if it is not installed, fall back to Gmail in the browser.
+       On a computer the link opens Gmail on the web as it is. */
+    document.addEventListener('click', function (e) {
+      const a = e.target.closest('[data-gmail]');
+      if (!a) return;
+      const to = a.getAttribute('data-to') || '';
+      const su = a.getAttribute('data-su') || '';
+      const body = a.getAttribute('data-body') || '';
+      const web = a.href;
+      const ua = navigator.userAgent || '';
+      const iOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const android = /Android/i.test(ua);
+      if (!iOS && !android) return;
+      e.preventDefault();
+      if (android) {
+        location.href = 'intent:' + decodeURIComponent(to) + '?subject=' + su + '&body=' + body +
+          '#Intent;scheme=mailto;package=com.google.android.gm;S.browser_fallback_url=' + encodeURIComponent(web) + ';end';
+        return;
+      }
+      /* iOS: try the app; if the page is still in front a moment later,
+         the app is not installed, so open Gmail on the web instead */
+      const fallback = setTimeout(function () {
+        if (!document.hidden) location.href = web;
+      }, 1400);
+      document.addEventListener('visibilitychange', function () { clearTimeout(fallback); }, { once: true });
+      location.href = 'googlegmail://co?to=' + to + '&subject=' + su + '&body=' + body;
+    });
+
     /* copy-to-clipboard, with a select-the-text fallback */
     function copyButton(text) {
       return '<button type="button" class="copy-btn" data-copy="' + escapeHtml(text) + '" aria-label="Copy ' + escapeHtml(text) + '">' +
@@ -1566,8 +1595,8 @@
         (INBOX
           ? '<div class="contact-card__mail"><a class="contact-card__addr" href="mailto:' + escapeHtml(INBOX) + '">' + escapeHtml(INBOX) + '</a>' + copyButton(INBOX) + '</div>' +
             '<div class="contact-card__row">' +
-            '<a class="btn btn--glass btn--sm" href="' + gmailTo(INBOX) + '" ' + ext + '>' + ICON.mail + 'Open in Gmail</a>' +
-            '<a class="btn btn--glass btn--sm" href="mailto:' + escapeHtml(INBOX) + '">Email app</a></div>'
+            '<a class="btn btn--glass btn--sm" href="' + gmailTo(INBOX) + '" ' + ext + ' data-gmail data-to="' + encodeURIComponent(INBOX) + '">' + ICON.mail + 'Gmail</a>' +
+            '<a class="btn btn--glass btn--sm" href="mailto:' + escapeHtml(INBOX) + '">Mail app</a></div>'
           : '') +
         (SITE.phone ? '<a class="link-u" href="tel:' + SITE.phone.replace(/\s/g, '') + '">' + escapeHtml(SITE.phone) + '</a>' : '') +
         (NETS.length

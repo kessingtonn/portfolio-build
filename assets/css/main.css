@@ -1870,3 +1870,24 @@ h1 em, h2 em, h3 em, .hero__title em {
   box-shadow: 0 0 0 4px var(--accent-glow);
 }
 .input::placeholder, .textarea::placeholder { color: rgba(245, 238, 226, 0.36); }
+
+/* ---------- enquiry page ---------- */
+/* the summary card must size to its content, not stretch over the
+   contact card below it */
+.split--enquiry aside { display: grid; gap: 1rem; align-content: start; }
+.split--enquiry aside > .pkg { height: auto; margin-bottom: 0 !important; }
+.split--enquiry aside > .pkg:hover { transform: none; }
+/* phones: the form comes first, contact options after it */
+@media (max-width: 59.99rem) {
+  .split--enquiry > aside { order: 2; }
+}
+.form { gap: 1.4rem; }
+.field > label.check, .check {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: var(--step--1);
+  line-height: 1.55;
+  color: var(--bone-dim);
+}
+.contact-card > .link-u { justify-self: start; }
+.contact-card .btn--sm { flex: 1 1 auto; justify-content: center; }
