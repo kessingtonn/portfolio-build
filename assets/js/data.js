@@ -31,6 +31,25 @@ window.ZANGRID = (function () {
        back to opening a pre-filled email instead. */
     formEndpoint: '',
 
+    /* How photo and film sections are laid out.
+         'grid'       even tiles with captions underneath
+         'masonry'    columns, every frame at its natural shape (photos only)
+         'seamless'   edge-to-edge rows with no gaps, captions on hover
+         'filmstrip'  one full-width row you swipe or drag through
+         'cinema'     one big frame at a time, crossfading, with thumbnails
+       `photos` covers photography sections, `films` the 16:9
+       reels and `vertical` the 9:16 reels. Any category can
+       override these with its own `layouts: { … }` below.
+       `switcher: true` shows a small control above each
+       section so visitors can pick their own view; set it to
+       false to lock every section to the layout you chose. */
+    layouts: {
+      photos: 'seamless',
+      films: 'cinema',
+      vertical: 'filmstrip',
+      switcher: true
+    },
+
     /* Hero background clip.
        Drop your own loop into assets/video/ and list it
        here — the first source the browser can play wins.
@@ -87,6 +106,8 @@ window.ZANGRID = (function () {
          Suggested: a runway or campaign frame. */
       heroImage: null,   // 'assets/img/heroes/fashion.jpg'
       heroVideo: null,   // 'assets/video/heroes/fashion.mp4'
+      /* optional — overrides site.layouts on this page only */
+      layouts: { photos: 'masonry' },
       label: 'Fashion',
       page: 'fashion.html',
       title: 'Fashion',
@@ -115,6 +136,7 @@ window.ZANGRID = (function () {
          Suggested: a wide from a ceremony. */
       heroImage: null,   // 'assets/img/heroes/weddings.jpg'
       heroVideo: null,   // 'assets/video/heroes/weddings.mp4'
+      layouts: { photos: 'cinema' },
       label: 'Weddings',
       page: 'weddings.html',
       title: 'Weddings',

@@ -226,6 +226,10 @@ Notes that matter:
 - **Mixed sets are fine.** Entries with `src` show photographs, entries without keep their
   placeholder, so you can publish a project before every frame is retouched.
 - **Order is the order they appear**, and the viewer's arrow keys move through them in that order.
+- **Choose how they're shown.** `site.layouts` in `data.js` picks grid, masonry, seamless,
+  filmstrip or cinema for every photo and film section. A category's own `layouts` overrides it on
+  that category's page. Masonry and seamless show each photograph at its true shape, so in those
+  layouts `orientation` only matters until the image loads. See *Gallery layouts* in the README.
 
 ---
 

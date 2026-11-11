@@ -121,6 +121,50 @@ node tools/build-categories.js
 Edit `templates/category.template.html`, never the generated category pages — they are overwritten
 on every run.
 
+## Gallery layouts
+
+Every photography and film section can be shown five ways. Pick the defaults in `site.layouts` in
+`data.js`:
+
+```js
+layouts: {
+  photos: 'seamless',     // photography sections
+  films: 'cinema',        // 16:9 reels
+  vertical: 'filmstrip',  // 9:16 reels
+  switcher: true          // let visitors change the view
+}
+```
+
+| Layout      | What it looks like | Works for |
+| ----------- | ------------------ | --------- |
+| `grid`      | Even tiles with captions underneath (the original look) | photos, films |
+| `masonry`   | Columns, each frame at its natural shape, no cropping | photos |
+| `seamless`  | Full-width rows edge to edge with hairline gaps; every row the same height, captions on hover | photos, films |
+| `filmstrip` | One full-width row you swipe, drag or arrow through, snapping frame to frame | photos, films |
+| `cinema`    | One big frame at a time, crossfading on a timer, with a thumbnail rail, play/pause and a progress line. Films loop a muted preview on the big frame | photos, films |
+
+A category can use its own layouts on its own page. Add `layouts` to its entry:
+
+```js
+{ id: 'weddings', …, layouts: { photos: 'cinema' } }
+```
+
+With `switcher: true`, a small control sits above each section and the visitor's choice is
+remembered in their browser. Set it to `false` to lock every section to your choice. A grid can also
+be fixed in the HTML with `data-layout="masonry"`.
+
+Seamless and masonry use each photograph's real shape. They read it from the image once it loads, so
+nothing needs adding. To avoid a small reflow, you can give `width`/`height` (or `ratio`) on a
+gallery entry.
+
+**The viewer** pages through the whole section you opened it from: photos and films together,
+across projects. Arrow keys, on-screen arrows, swiping, and swiping down to close all work, and there
+is a full-screen button. It preloads the frames either side so paging doesn't wait. Clicking a
+project card pages through that project's films and then its photographs.
+
+Autoplay, crossfades and the slow zoom are switched off for visitors who ask for reduced motion or
+are on data-saver. Slideshows pause on hover, on focus, and when scrolled out of view.
+
 ## The hero video
 
 The looping background is driven by `site.heroVideo` in `data.js` — a list of sources, first

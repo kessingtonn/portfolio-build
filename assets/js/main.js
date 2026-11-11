@@ -275,12 +275,21 @@
   const PHOTOS = [];
   PROJECTS.forEach(function (p) {
     p.films.forEach(function (film, i) {
-      FILMS.push({ project: p, film: film, index: i, orientation: film.orientation || 'horizontal' });
+      const orientation = film.orientation || 'horizontal';
+      FILMS.push({ project: p, film: film, index: i, orientation: orientation, ratio: orientation === 'vertical' ? 0.5625 : 1.7778 });
     });
     p.gallery.forEach(function (photo, i) {
-      PHOTOS.push({ project: p, photo: photo, index: i });
+      PHOTOS.push({ project: p, photo: photo, index: i, ratio: photoRatio(photo) });
     });
   });
+
+  /* width ÷ height: an explicit `ratio`, else `width`/`height`,
+     else a guess from `orientation` (corrected once the image loads) */
+  function photoRatio(ph) {
+    if (ph.ratio) return +ph.ratio;
+    if (ph.width && ph.height) return +(ph.width / ph.height).toFixed(4);
+    return ph.orientation === 'portrait' ? 0.6667 : 1.5;
+  }
 
   function previewFor(project, film) {
     if (film && film.preview) return film.preview;
@@ -343,7 +352,7 @@
 
     return (
       '<button type="button" class="card reveal' + (vertical ? ' card--portrait' : '') + '" ' +
-      'data-film="' + escapeHtml(p.id) + ':' + entry.index + '" ' +
+      'data-film="' + escapeHtml(p.id) + ':' + entry.index + '" style="--r:' + entry.ratio + '" ' +
       'data-category="' + escapeHtml(p.category) + '" data-orientation="' + escapeHtml(entry.orientation) + '"' +
       (preview ? ' data-preview="' + escapeHtml(preview) + '"' : '') + '>' +
       '<span class="card__media">' + media +
@@ -365,7 +374,7 @@
     const portraitShot = ph.orientation === 'portrait';
     return (
       '<button type="button" class="shot reveal' + (portraitShot ? ' shot--portrait' : '') + '" ' +
-      'data-photo="' + escapeHtml(p.id) + ':' + entry.index + '" data-category="' + escapeHtml(p.category) + '">' +
+      'data-photo="' + escapeHtml(p.id) + ':' + entry.index + '" style="--r:' + entry.ratio + '" data-category="' + escapeHtml(p.category) + '">' +
       '<span class="shot__media">' +
       mediaFor(ph.src, ph.alt || ph.caption || p.title, ph.hue == null ? p.hue : ph.hue, String(index + 1).padStart(2, '0')) +
       '<span class="shot__zoom" aria-hidden="true">View</span>' +
@@ -437,6 +446,405 @@
     host.innerHTML = '<p class="empty-note">' + message + '</p>';
   }
 
+  /* ---- layouts ---------------------------------------
+     Photo and film sections can be shown five ways:
+
+       grid       even tiles with captions (the original)
+       masonry    columns at each frame's natural shape
+       seamless   edge-to-edge justified rows, no gaps
+       filmstrip  one swipeable row, full width
+       cinema     one big frame at a time, crossfading,
+                  with a thumbnail rail underneath
+
+     The default comes from data.js — a category's own
+     `layouts`, then `site.layouts`. When the switcher is
+     on, visitors can change it with the small control
+     above each section and their pick is remembered.
+     ---------------------------------------------------- */
+  const LAYOUTS = {
+    grid:      { label: 'Grid',      icon: 'M1 1h4.2v4.2H1zM6.8 1H11v4.2H6.8zM1 6.8h4.2V11H1zM6.8 6.8H11V11H6.8z' },
+    masonry:   { label: 'Masonry',   icon: 'M1 1h4.2v6H1zM6.8 1H11v3.4H6.8zM1 8.2h4.2V11H1zM6.8 5.6H11V11H6.8z' },
+    seamless:  { label: 'Seamless',  icon: 'M0 1h7.4v4.6H0zM7.6 1H12v4.6H7.6zM0 5.8h4.4V11H0zM4.6 5.8H12V11H4.6z' },
+    filmstrip: { label: 'Filmstrip', icon: 'M0 3h2.6v6H0zM3.4 3h5.2v6H3.4zM9.4 3H12v6H9.4z' },
+    cinema:    { label: 'Cinema',    icon: 'M1 1h10v7H1zM1 9.4h2.2V11H1zM3.9 9.4h2.2V11H3.9zM6.8 9.4H9V11H6.8zM9.7 9.4H11V11H9.7z' }
+  };
+  const ALLOWED = {
+    photos: ['grid', 'masonry', 'seamless', 'filmstrip', 'cinema'],
+    films: ['grid', 'seamless', 'filmstrip', 'cinema'],
+    vertical: ['grid', 'seamless', 'filmstrip', 'cinema']
+  };
+  const SITE_LAYOUTS = (DATA.site && DATA.site.layouts) || {};
+  const SWITCHER = SITE_LAYOUTS.switcher !== false;
+
+  const store = {
+    get: (k) => { try { return window.localStorage.getItem(k); } catch (e) { return null; } },
+    set: (k, v) => { try { window.localStorage.setItem(k, v); } catch (e) { /* private mode */ } }
+  };
+
+  function layoutFor(grid) {
+    const s = grid._zg;
+    const allowed = ALLOWED[s.kind];
+    const pick = (v) => (v && allowed.indexOf(v) !== -1 ? v : null);
+    const own = (s.cat && category(s.cat).layouts) || {};
+    return (
+      (SWITCHER && pick(store.get(s.key))) ||
+      pick(grid.getAttribute('data-layout')) ||
+      pick(own[s.kind]) ||
+      pick(SITE_LAYOUTS[s.kind]) ||
+      'grid'
+    );
+  }
+
+  /* Can we quietly autoplay muted clips and slideshows? */
+  const canAutoplay = (function () {
+    if (reducedMotion) return false;
+    const conn = navigator.connection;
+    return !(conn && (conn.saveData || /2g/.test(conn.effectiveType || '')));
+  })();
+
+  /* Real photographs report their true shape once loaded,
+     so seamless rows and masonry columns fit them exactly. */
+  function trackRatios(host) {
+    $$('.shot img', host).forEach(function (img) {
+      const apply = () => {
+        if (!img.naturalWidth || !img.naturalHeight) return;
+        const tile = img.closest('[style*="--r"]');
+        if (tile) tile.style.setProperty('--r', (img.naturalWidth / img.naturalHeight).toFixed(4));
+      };
+      if (img.complete) apply();
+      else img.addEventListener('load', apply, { once: true });
+    });
+  }
+
+  /* ---- toolbar: layout switcher + filmstrip arrows ---- */
+  function toolbar(grid) {
+    const s = grid._zg;
+    const bar = document.createElement('div');
+    bar.className = 'layout-bar';
+    const switcher = SWITCHER
+      ? '<div class="layout-switch" role="radiogroup" aria-label="Layout">' +
+        ALLOWED[s.kind]
+          .map(function (l) {
+            return (
+              '<button type="button" role="radio" class="layout-switch__btn" data-set-layout="' + l + '" ' +
+              'aria-checked="false" title="' + LAYOUTS[l].label + '">' +
+              '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="' + LAYOUTS[l].icon + '"/></svg>' +
+              '<span>' + LAYOUTS[l].label + '</span></button>'
+            );
+          })
+          .join('') +
+        '</div>'
+      : '<span></span>';
+    bar.innerHTML =
+      switcher +
+      '<div class="layout-bar__arrows" hidden>' +
+      '<button type="button" class="round-btn" data-strip="-1" aria-label="Scroll back">&#8249;</button>' +
+      '<button type="button" class="round-btn" data-strip="1" aria-label="Scroll on">&#8250;</button>' +
+      '</div>';
+    grid.parentNode.insertBefore(bar, grid);
+
+    bar.addEventListener('click', function (e) {
+      const btn = e.target.closest('[data-set-layout]');
+      if (btn) {
+        s.layout = btn.getAttribute('data-set-layout');
+        store.set(s.key, s.layout);
+        present(grid);
+        return;
+      }
+      const arrow = e.target.closest('[data-strip]');
+      if (arrow) {
+        const dir = parseInt(arrow.getAttribute('data-strip'), 10);
+        grid.scrollBy({ left: dir * grid.clientWidth * 0.8, behavior: reducedMotion ? 'auto' : 'smooth' });
+      }
+    });
+
+    /* arrow keys move between the radio options */
+    bar.addEventListener('keydown', function (e) {
+      if (!e.target.matches('[data-set-layout]')) return;
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      const opts = $$('[data-set-layout]', bar);
+      const next = opts[(opts.indexOf(e.target) + (e.key === 'ArrowRight' ? 1 : -1) + opts.length) % opts.length];
+      next.click();
+      next.focus();
+    });
+    return bar;
+  }
+
+  function syncToolbar(grid) {
+    const bar = grid._zg.bar;
+    if (!bar) return;
+    $$('[data-set-layout]', bar).forEach(function (b) {
+      const on = b.getAttribute('data-set-layout') === grid._zg.layout;
+      b.setAttribute('aria-checked', String(on));
+      b.tabIndex = on ? 0 : -1;
+    });
+    $('.layout-bar__arrows', bar).hidden = grid._zg.layout !== 'filmstrip' || grid._zg.items.length < 2;
+  }
+
+  /* ---- filmstrip: drag to scroll with a mouse ---- */
+  function dragScroll(grid) {
+    let startX = 0;
+    let startLeft = 0;
+    let dragging = false;
+    let moved = false;
+    grid.addEventListener('pointerdown', function (e) {
+      if (grid._zg.layout !== 'filmstrip' || e.pointerType !== 'mouse' || e.button !== 0) return;
+      dragging = true;
+      moved = false;
+      startX = e.clientX;
+      startLeft = grid.scrollLeft;
+    });
+    window.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 5) {
+        moved = true;
+        grid.classList.add('is-dragging');
+      }
+      if (moved) grid.scrollLeft = startLeft - dx;
+    });
+    window.addEventListener('pointerup', function () {
+      if (!dragging) return;
+      dragging = false;
+      grid.classList.remove('is-dragging');
+    });
+    /* a drag should not also open the viewer */
+    grid.addEventListener('click', function (e) {
+      if (moved) {
+        e.stopPropagation();
+        e.preventDefault();
+        moved = false;
+      }
+    }, true);
+  }
+
+  /* ---- cinema: one big frame, crossfading ---------- */
+  function cinemaSlide(grid, i) {
+    const s = grid._zg;
+    const entry = s.items[i];
+    const p = entry.project;
+    let attr;
+    let media;
+    let caption;
+    if (entry.film) {
+      const f = entry.film;
+      const preview = previewFor(p, f);
+      attr = 'data-film="' + escapeHtml(p.id) + ':' + entry.index + '"';
+      media =
+        mediaFor(f.poster, f.title || p.title, p.hue, String(i + 1).padStart(2, '0')) +
+        (preview && canAutoplay
+          ? '<video class="cine__video" src="' + escapeHtml(preview) + '" muted loop playsinline autoplay preload="metadata" aria-hidden="true"></video>'
+          : '');
+      caption = (f.title || p.title) + (f.duration ? ' · ' + f.duration : '');
+    } else {
+      const ph = entry.photo;
+      attr = 'data-photo="' + escapeHtml(p.id) + ':' + entry.index + '"';
+      media = ph.src
+        ? '<img class="cine__blur" src="' + escapeHtml(ph.src) + '" alt="" aria-hidden="true">' +
+          '<img src="' + escapeHtml(ph.src) + '" alt="' + escapeHtml(ph.alt || ph.caption || p.title) + '">'
+        : placeholder(ph.hue == null ? p.hue : ph.hue, ph.caption || p.title, String(i + 1).padStart(2, '0'));
+      caption = ph.caption || p.title;
+    }
+    return {
+      html:
+        '<button type="button" class="cine__slide" ' + attr + ' aria-label="Open ' + escapeHtml(caption) + ' in the viewer">' +
+        media +
+        (entry.film ? '<span class="card__play cine__play"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg>Play film</span>' : '') +
+        '</button>',
+      caption: caption,
+      project: p
+    };
+  }
+
+  function thumbMarkup(grid, entry, i) {
+    const p = entry.project;
+    const src = entry.film ? entry.film.poster : entry.photo.src;
+    const hue = entry.photo && entry.photo.hue != null ? entry.photo.hue : p.hue;
+    return (
+      '<button type="button" class="cine__thumb" data-cine-go="' + i + '" style="--r:' + entry.ratio + '" ' +
+      'aria-label="Show ' + escapeHtml((entry.film ? entry.film.title : entry.photo.caption) || p.title) + '">' +
+      (src ? '<img src="' + escapeHtml(src) + '" alt="" loading="lazy" decoding="async">' : placeholder(hue, '', '')) +
+      '</button>'
+    );
+  }
+
+  function buildCinema(grid) {
+    const s = grid._zg;
+    const vertical = s.kind === 'vertical';
+    const delay = s.kind === 'photos' ? 5000 : 9000;
+    grid.innerHTML =
+      '<div class="cine' + (vertical ? ' cine--vertical' : '') + (s.kind === 'photos' ? ' cine--photos' : '') + '" ' +
+      'tabindex="0" role="region" aria-roledescription="carousel" aria-label="Slideshow">' +
+      '<div class="cine__stage" data-cine-stage></div>' +
+      '<div class="cine__bar">' +
+      '<div class="cine__caption" aria-live="polite"><span class="cine__title" data-cine-title></span>' +
+      '<span class="cine__meta" data-cine-meta></span></div>' +
+      '<div class="cine__controls">' +
+      '<button type="button" class="round-btn" data-cine-step="-1" aria-label="Previous">&#8249;</button>' +
+      '<button type="button" class="round-btn" data-cine-toggle aria-label="Pause slideshow"></button>' +
+      '<button type="button" class="round-btn" data-cine-step="1" aria-label="Next">&#8250;</button>' +
+      '</div></div>' +
+      '<div class="cine__progress"><span data-cine-progress></span></div>' +
+      '<div class="cine__rail">' + s.items.map((e, i) => thumbMarkup(grid, e, i)).join('') + '</div>' +
+      '</div>';
+
+    const root = $('.cine', grid);
+    const stage = $('[data-cine-stage]', root);
+    const titleEl = $('[data-cine-title]', root);
+    const metaEl = $('[data-cine-meta]', root);
+    const toggle = $('[data-cine-toggle]', root);
+    const bar = $('[data-cine-progress]', root);
+    const thumbs = $$('.cine__thumb', root);
+    let current = -1;
+    let timer = null;
+    let playing = canAutoplay && s.items.length > 1;
+    let hovering = false;
+    let visible = true;
+
+    function paintToggle() {
+      toggle.innerHTML = playing
+        ? '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 1.5h2.5v9H2.5zM7 1.5h2.5v9H7z"/></svg>'
+        : '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5l7.5 4.5L3 10.5z"/></svg>';
+      toggle.setAttribute('aria-label', playing ? 'Pause slideshow' : 'Play slideshow');
+      toggle.hidden = s.items.length < 2;
+    }
+
+    function schedule() {
+      clearTimeout(timer);
+      bar.style.transition = 'none';
+      bar.style.transform = 'scaleX(0)';
+      if (!playing || hovering || !visible || s.items.length < 2) return;
+      void bar.offsetWidth; /* restart the progress line */
+      bar.style.transition = 'transform ' + delay + 'ms linear';
+      bar.style.transform = 'scaleX(1)';
+      timer = setTimeout(() => go(current + 1), delay);
+    }
+
+    function go(i) {
+      const n = s.items.length;
+      i = ((i % n) + n) % n;
+      if (i === current) return;
+      const slide = cinemaSlide(grid, i);
+      const layer = document.createElement('div');
+      layer.className = 'cine__layer';
+      layer.innerHTML = slide.html;
+      stage.appendChild(layer);
+      const old = $$('.cine__layer', stage).filter((l) => l !== layer);
+      $$('video', layer).forEach((v) => v.addEventListener('playing', () => v.classList.add('is-ready'), { once: true }));
+      void layer.offsetWidth; /* commit the faded-out state so the crossfade runs */
+      layer.classList.add('is-in');
+      setTimeout(() => old.forEach((l) => l.remove()), reducedMotion ? 0 : 900);
+
+      current = i;
+      titleEl.textContent = slide.caption;
+      metaEl.textContent = slide.project.title + ' · ' + (i + 1) + ' / ' + n;
+      thumbs.forEach((t, k) => {
+        t.classList.toggle('is-active', k === i);
+        if (k === i) t.setAttribute('aria-current', 'true');
+        else t.removeAttribute('aria-current');
+      });
+      const t = thumbs[i];
+      const rail = t.parentNode;
+      rail.scrollTo({ left: t.offsetLeft - rail.clientWidth / 2 + t.clientWidth / 2, behavior: reducedMotion ? 'auto' : 'smooth' });
+
+      /* warm the next frame so the crossfade never waits */
+      const next = s.items[(i + 1) % n];
+      if (next && next.photo && next.photo.src) new Image().src = next.photo.src;
+      schedule();
+    }
+
+    root.addEventListener('click', function (e) {
+      const step = e.target.closest('[data-cine-step]');
+      if (step) return go(current + parseInt(step.getAttribute('data-cine-step'), 10));
+      const thumb = e.target.closest('[data-cine-go]');
+      if (thumb) return go(parseInt(thumb.getAttribute('data-cine-go'), 10));
+      if (e.target.closest('[data-cine-toggle]')) {
+        playing = !playing;
+        paintToggle();
+        schedule();
+      }
+    });
+    root.addEventListener('keydown', function (e) {
+      if (e.target !== root && !e.target.matches('.cine__thumb')) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(current + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(current - 1); }
+    });
+    root.addEventListener('mouseenter', () => { hovering = true; schedule(); });
+    root.addEventListener('mouseleave', () => { hovering = false; schedule(); });
+    root.addEventListener('focusin', () => { hovering = true; schedule(); });
+    root.addEventListener('focusout', () => { hovering = false; schedule(); });
+
+    /* swipe the stage on touch screens */
+    let sx = null;
+    let swiped = false;
+    stage.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; swiped = false; }, { passive: true });
+    stage.addEventListener('touchend', function (e) {
+      if (sx == null) return;
+      const dx = e.changedTouches[0].clientX - sx;
+      sx = null;
+      if (Math.abs(dx) > 45) {
+        swiped = true;
+        go(current + (dx < 0 ? 1 : -1));
+      }
+    });
+    stage.addEventListener('click', function (e) {
+      if (swiped) { e.stopPropagation(); swiped = false; }
+    }, true);
+
+    /* rest when scrolled away */
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(function (entries) {
+        visible = entries[0].isIntersecting;
+        $$('video', stage).forEach((v) => {
+          if (visible) { const p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause();
+        });
+        schedule();
+      }, { threshold: 0.25 });
+      io.observe(root);
+      s.teardown = () => { io.disconnect(); clearTimeout(timer); };
+    } else {
+      s.teardown = () => clearTimeout(timer);
+    }
+
+    paintToggle();
+    go(0);
+  }
+
+  function present(grid) {
+    const s = grid._zg;
+    if (s.teardown) { s.teardown(); s.teardown = null; }
+    Object.keys(LAYOUTS).forEach((l) => grid.classList.toggle('is-layout-' + l, l === s.layout));
+    syncToolbar(grid);
+    if (!s.items.length) {
+      emptyNote(grid, s.empty);
+      return;
+    }
+    if (s.layout === 'cinema') buildCinema(grid);
+    else {
+      grid.innerHTML = s.items.map(s.markup).join('');
+      grid.scrollLeft = 0;
+    }
+    finish(grid);
+    trackRatios(grid);
+  }
+
+  function setUp(grid, kind, items, markup, empty) {
+    const cat = grid.getAttribute('data-category');
+    grid._zg = {
+      kind: kind,
+      cat: cat,
+      items: items,
+      markup: markup,
+      empty: empty,
+      key: 'zg-layout:' + location.pathname + ':' + (cat || 'all') + ':' + kind
+    };
+    grid._zg.layout = layoutFor(grid);
+    if (items.length) grid._zg.bar = toolbar(grid);
+    dragScroll(grid);
+    present(grid);
+  }
+
   /* ---- grids ---- */
   function renderGrid(grid) {
     const only = grid.getAttribute('data-filter');
@@ -470,12 +878,13 @@
     if (orientation) list = list.filter((e) => e.orientation === orientation);
     if (!isNaN(limit)) list = list.slice(0, limit);
 
-    if (!list.length) {
-      emptyNote(grid, 'No ' + (orientation === 'vertical' ? 'vertical' : 'films') + ' in this collection yet.');
-      return;
-    }
-    grid.innerHTML = list.map(filmMarkup).join('');
-    finish(grid);
+    setUp(
+      grid,
+      orientation === 'vertical' ? 'vertical' : 'films',
+      list,
+      filmMarkup,
+      'No ' + (orientation === 'vertical' ? 'vertical' : 'films') + ' in this collection yet.'
+    );
   }
 
   function renderPhotoGrid(grid) {
@@ -486,12 +895,7 @@
     if (cat) list = list.filter((e) => e.project.category === cat);
     if (!isNaN(limit)) list = list.slice(0, limit);
 
-    if (!list.length) {
-      emptyNote(grid, 'Photographs from this collection are on their way.');
-      return;
-    }
-    grid.innerHTML = list.map(photoMarkup).join('');
-    finish(grid);
+    setUp(grid, 'photos', list, photoMarkup, 'Photographs from this collection are on their way.');
   }
 
   const grids = $$('[data-work-grid]');
@@ -730,7 +1134,12 @@
     box.setAttribute('aria-modal', 'true');
     box.setAttribute('aria-label', 'Project viewer');
     box.innerHTML =
+      '<div class="lb__top">' +
+      '<span class="lb__count" data-lb-count></span>' +
+      '<button type="button" class="lb__tool" data-lb-full aria-label="Full screen">' +
+      '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 1h3.5v1.2H2.2v2.3H1zM7.5 1H11v3.5H9.8V2.2H7.5zM1 7.5h1.2v2.3h2.3V11H1zM9.8 7.5H11V11H7.5V9.8h2.3z"/></svg></button>' +
       '<button type="button" class="lb__close" aria-label="Close viewer">&#10005;</button>' +
+      '</div>' +
       '<button type="button" class="lb__nav lb__nav--prev" aria-label="Previous">&#8249;</button>' +
       '<button type="button" class="lb__nav lb__nav--next" aria-label="Next">&#8250;</button>' +
       '<div class="lb__inner">' +
@@ -748,12 +1157,18 @@
     const blurbEl = $('[data-lb-blurb]', box);
     const tagsEl = $('[data-lb-tags]', box);
     const linkEl = $('[data-lb-link]', box);
+    const countEl = $('[data-lb-count]', box);
+    const fullBtn = $('[data-lb-full]', box);
     const closeBtn = $('.lb__close', box);
     const prevBtn = $('.lb__nav--prev', box);
     const nextBtn = $('.lb__nav--next', box);
     let lastFocus = null;
-    let sequence = [];   /* photos being paged through */
+    /* everything the visitor can page through: photos and
+       films alike, in the order of the section they opened */
+    let sequence = [];
     let position = 0;
+
+    if (!(box.requestFullscreen || box.webkitRequestFullscreen)) fullBtn.hidden = true;
 
     function filmEmbed(project, film) {
       const v = film.video || {};
@@ -788,26 +1203,18 @@
       return v.src || null;
     }
 
-    function setNav(show) {
-      prevBtn.hidden = !show;
-      nextBtn.hidden = !show;
+    function tags(list) {
+      return list.map((t) => '<span class="tag">' + escapeHtml(t) + '</span>').join('');
     }
 
-    function showFilm(project, index) {
-      const film = project.films[index] || project.films[0];
-      if (!film) return showPhotoSet(project, 0);
-      sequence = [];
-      setNav(false);
+    function paintFilm(project, film) {
       frame.classList.toggle('lb__frame--vertical', (film.orientation || project.orientation) === 'vertical');
       frame.innerHTML = filmEmbed(project, film);
       titleEl.textContent = film.title && film.title !== project.title
         ? project.title + ' — ' + film.title
         : project.title;
       blurbEl.textContent = project.blurb || '';
-      tagsEl.innerHTML = (project.tags || [])
-        .concat(film.duration ? [film.duration] : [])
-        .map((t) => '<span class="tag">' + escapeHtml(t) + '</span>')
-        .join('');
+      tagsEl.innerHTML = tags((project.tags || []).concat(film.duration ? [film.duration] : []));
 
       const url = filmUrl(project, film);
       const v = film.video || {};
@@ -819,39 +1226,47 @@
       } else {
         linkEl.parentElement.style.display = 'none';
       }
-      reveal();
     }
 
-    function showPhotoSet(project, index) {
-      sequence = project.gallery.map((photo, i) => ({ project: project, photo: photo, index: i }));
-      position = Math.max(0, Math.min(index, sequence.length - 1));
-      setNav(sequence.length > 1);
-      paintPhoto();
-      reveal();
-    }
-
-    function paintPhoto() {
-      const entry = sequence[position];
-      if (!entry) return;
-      const p = entry.project;
-      const ph = entry.photo;
+    function paintPhoto(p, ph) {
       frame.classList.toggle('lb__frame--vertical', ph.orientation === 'portrait');
       frame.innerHTML = ph.src
         ? '<img src="' + escapeHtml(ph.src) + '" alt="' + escapeHtml(ph.alt || ph.caption || p.title) + '">'
         : '<div class="lb__missing"><p class="eyebrow">' + escapeHtml(ph.caption || 'Photograph') + '</p>' +
           '<p class="muted">Add a `src` to this gallery entry in assets/js/data.js.</p></div>';
       titleEl.textContent = ph.caption ? p.title + ' — ' + ph.caption : p.title;
-      blurbEl.textContent =
-        (p.details && p.details.location ? p.details.location + ' · ' : '') +
-        (position + 1) + ' of ' + sequence.length;
-      tagsEl.innerHTML = (p.tags || []).map((t) => '<span class="tag">' + escapeHtml(t) + '</span>').join('');
+      blurbEl.textContent = p.details && p.details.location ? p.details.location : '';
+      tagsEl.innerHTML = tags(p.tags || []);
       linkEl.parentElement.style.display = 'none';
     }
 
+    function preload(entry) {
+      if (entry && entry.photo && entry.photo.src) new Image().src = entry.photo.src;
+    }
+
+    function paint() {
+      const entry = sequence[position];
+      if (!entry) return;
+      if (entry.film) paintFilm(entry.project, entry.film);
+      else paintPhoto(entry.project, entry.photo);
+      const many = sequence.length > 1;
+      prevBtn.hidden = !many;
+      nextBtn.hidden = !many;
+      countEl.textContent = many ? (position + 1) + ' / ' + sequence.length : '';
+      if (!reducedMotion && frame.animate) {
+        frame.animate([{ opacity: 0, transform: 'scale(0.985)' }, { opacity: 1, transform: 'none' }],
+          { duration: 420, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' });
+      }
+      if (many) {
+        preload(sequence[(position + 1) % sequence.length]);
+        preload(sequence[(position - 1 + sequence.length) % sequence.length]);
+      }
+    }
+
     function step(delta) {
-      if (!sequence.length) return;
+      if (sequence.length < 2) return;
       position = (position + delta + sequence.length) % sequence.length;
-      paintPhoto();
+      paint();
     }
 
     function reveal() {
@@ -861,15 +1276,23 @@
       closeBtn.focus();
     }
 
-    function open(project, kind, index) {
+    /* A project on its own: its films first, then its photographs */
+    function projectSequence(project) {
+      return project.films
+        .map((film, i) => ({ project: project, film: film, index: i }))
+        .concat(project.gallery.map((photo, i) => ({ project: project, photo: photo, index: i })));
+    }
+
+    function open(seq, start) {
       lastFocus = document.activeElement;
-      if (kind === 'photo') showPhotoSet(project, index);
-      else if (kind === 'film') showFilm(project, index);
-      else if (project.hasFilm) showFilm(project, 0);
-      else showPhotoSet(project, 0);
+      sequence = seq;
+      position = Math.max(0, Math.min(start, seq.length - 1));
+      paint();
+      reveal();
     }
 
     function close() {
+      if (document.fullscreenElement === box && document.exitFullscreen) document.exitFullscreen();
       box.classList.remove('is-open');
       document.body.classList.remove('is-locked');
       frame.innerHTML = '';
@@ -882,25 +1305,33 @@
       return { id: parts[0], index: parseInt(parts[1], 10) || 0 };
     }
 
+    /* Open at a given film or photo, paging through the
+       section it sits in when there is one. */
+    function openAt(type, ref, trigger) {
+      const project = projectById(ref.id);
+      if (!project) return;
+      const host = trigger.closest('[data-photo-grid], [data-film-grid]');
+      let seq = host && host._zg ? host._zg.items : null;
+      let start = -1;
+      if (seq) {
+        start = seq.findIndex((e) => e.project.id === ref.id && e.index === ref.index && !!e.film === (type === 'film'));
+      }
+      if (start < 0) {
+        seq = projectSequence(project);
+        start = type === 'film' ? ref.index : project.films.length + ref.index;
+      }
+      open(seq, start);
+    }
+
     document.addEventListener('click', (e) => {
       const filmBtn = e.target.closest('[data-film]');
-      if (filmBtn) {
-        const ref = parse(filmBtn.getAttribute('data-film'));
-        const project = projectById(ref.id);
-        if (project) open(project, 'film', ref.index);
-        return;
-      }
+      if (filmBtn) return openAt('film', parse(filmBtn.getAttribute('data-film')), filmBtn);
       const photoBtn = e.target.closest('[data-photo]');
-      if (photoBtn) {
-        const ref = parse(photoBtn.getAttribute('data-photo'));
-        const project = projectById(ref.id);
-        if (project) open(project, 'photo', ref.index);
-        return;
-      }
+      if (photoBtn) return openAt('photo', parse(photoBtn.getAttribute('data-photo')), photoBtn);
       const card = e.target.closest('[data-project]');
       if (card) {
         const project = projectById(card.getAttribute('data-project'));
-        if (project) open(project, 'project', 0);
+        if (project) open(projectSequence(project), 0);
         return;
       }
       if (e.target === box) close();
@@ -909,16 +1340,39 @@
     closeBtn.addEventListener('click', close);
     prevBtn.addEventListener('click', () => step(-1));
     nextBtn.addEventListener('click', () => step(1));
+    fullBtn.addEventListener('click', function () {
+      if (document.fullscreenElement) return document.exitFullscreen();
+      const req = box.requestFullscreen || box.webkitRequestFullscreen;
+      if (req) req.call(box);
+    });
+
+    /* swipe left / right on touch screens */
+    let sx = null;
+    let sy = null;
+    box.addEventListener('touchstart', function (e) {
+      if (e.touches.length !== 1) { sx = null; return; }
+      sx = e.touches[0].clientX;
+      sy = e.touches[0].clientY;
+    }, { passive: true });
+    box.addEventListener('touchend', function (e) {
+      if (sx == null) return;
+      const dx = e.changedTouches[0].clientX - sx;
+      const dy = e.changedTouches[0].clientY - sy;
+      sx = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
+      else if (dy > 90 && Math.abs(dy) > Math.abs(dx) * 1.5) close();   /* swipe down to dismiss */
+    });
 
     document.addEventListener('keydown', (e) => {
       if (!box.classList.contains('is-open')) return;
       if (e.key === 'Escape') return close();
-      if (sequence.length > 1) {
+      if (sequence.length > 1 && !(e.target && e.target.tagName === 'VIDEO')) {
         if (e.key === 'ArrowLeft') return step(-1);
         if (e.key === 'ArrowRight') return step(1);
       }
       if (e.key === 'Tab') {
-        const focusable = $$('a[href], button:not([hidden]), iframe, video, [tabindex]:not([tabindex="-1"])', box);
+        const focusable = $$('a[href], button:not([hidden]), iframe, video, [tabindex]:not([tabindex="-1"])', box)
+          .filter((el) => el.offsetParent !== null || el === closeBtn);
         if (!focusable.length) return;
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
