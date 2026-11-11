@@ -22,7 +22,7 @@ vm.runInContext(fs.readFileSync(path.join(ROOT, 'assets/js/data.js'), 'utf8'), s
 const D = sandbox.window.ZANGRID;
 
 const SAMPLE = /commondatastorage\.googleapis\.com/;
-const local = (p) => p && !/^https?:/.test(p);
+const local = (p) => p && !/^(https?|youtube|vimeo|drive):/.test(p);  /* hosted elsewhere */
 const exists = (p) => fs.existsSync(path.join(ROOT, p));
 
 const rows = [];      /* { slot, where, value } */

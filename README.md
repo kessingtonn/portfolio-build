@@ -102,7 +102,15 @@ Each project can hold **films**, **photographs**, or both, plus a details block:
 video: { type: 'file',    src: 'assets/video/work/smith/film.mp4' }  // self-hosted
 video: { type: 'youtube', id: 'VIDEO_ID' }                           // youtube-nocookie embed
 video: { type: 'vimeo',   id: '123456789' }                          // vimeo player
+video: { type: 'drive',   id: 'GOOGLE_DRIVE_FILE_ID' }               // google drive player
 ```
+
+`drive` plays the file from Google Drive. The file must be shared as *Anyone with the link can view*,
+and the ID is the long string in its share link (`drive.google.com/file/d/<ID>/view`). Drive's player
+works but is basic and can hit viewing limits on busy days, so move hero pieces to YouTube or Vimeo
+when you can. Changing `type` and `id` is all it takes. The `preview` clip (a 6-second silent loop
+in `assets/video/work/`) and the `poster` still stay on the site, so tiles and slideshows never wait on
+Drive.
 
 Gallery entries with no `src` draw a tinted placeholder, so you can build a project out before the
 photographs are ready.
@@ -171,6 +179,18 @@ The looping background is driven by `site.heroVideo` in `data.js` — a list of 
 playable one wins. Out of the box it points at a remote sample clip. Drop your own loop into
 `assets/video/` and uncomment the local entries:
 
+An entry can carry `media`, so phones and desktops get different cuts. The site ships with the
+original vertical clip for portrait screens and a 16:9 version for everything else:
+
+```js
+heroVideo: [
+  { src: 'assets/video/hero-loop-portrait.mp4', type: 'video/mp4', media: '(max-aspect-ratio: 4/5)' },
+  { src: 'assets/video/hero-loop.mp4',          type: 'video/mp4' }
+]
+```
+
+Without `media`, the list works as before:
+
 ```js
 heroVideo: [
   { src: 'assets/video/hero-loop.webm', type: 'video/webm' },
@@ -193,9 +213,11 @@ out of view.
 
 ## Placeholder media — replace before launch
 
-* Portfolio clips point at Google's public sample videos so the player works immediately.
-* Photo tiles and project tiles with no `src` render a generated gradient placeholder tinted by `hue`.
-* Crew photos on `about.html` are the same placeholders.
+* The portfolio is real work: 33 projects, 77 photographs and 45 films. Project titles, blurbs, years
+  and categories were drafted from the files themselves, so check them and correct any names.
+* Crew photos on `about.html` and client logos are still placeholders.
+* Reviews link to the old sample projects, so their "See the work" links are hidden until each
+  `testimonials[].project` is pointed at a real project id.
 * Prices, copy, stats, testimonials and contact details are plausible drafts, not real terms.
 
 ## Making the enquiry form deliver

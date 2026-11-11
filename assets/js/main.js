@@ -122,7 +122,11 @@
 
     /* Sources come from data.js so nothing 404s before the
        studio has dropped its own loop in. */
-    const sources = (DATA.site && DATA.site.heroVideo) || [];
+    /* an entry with `media` (e.g. '(orientation: portrait)') is only
+       offered to screens that match it */
+    const sources = ((DATA.site && DATA.site.heroVideo) || []).filter(
+      (item) => !item.media || window.matchMedia(item.media).matches
+    );
     sources.forEach((item) => {
       const source = document.createElement('source');
       source.src = item.src;
@@ -326,7 +330,7 @@
         (project.films.length > 1 ? project.films.length + ' films' : 'Play film') + '</span>'
       : '<span class="card__play">' + project.gallery.length + ' photographs</span>';
     const ratio = project.hasFilm
-      ? '<span class="card__ratio">' + (project.orientation === 'vertical' ? '9:16' : '16:9') + '</span>'
+      ? '<span class="card__ratio">' + (project.films[0].orientation === 'vertical' ? '9:16' : '16:9') + '</span>'
       : '<span class="card__ratio">Photo</span>';
 
     return (
@@ -1186,6 +1190,15 @@
           '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>'
         );
       }
+      if (v.type === 'drive') {
+        /* plays straight from Google Drive — the file must be shared
+           as "anyone with the link can view" */
+        return (
+          '<iframe src="https://drive.google.com/file/d/' + encodeURIComponent(v.id) +
+          '/preview" title="' + escapeHtml(film.title || project.title) +
+          '" allow="autoplay; fullscreen" allowfullscreen></iframe>'
+        );
+      }
       if (v.src) {
         return '<video src="' + escapeHtml(v.src) + '" controls autoplay playsinline preload="metadata"></video>';
       }
@@ -1200,6 +1213,7 @@
       const v = film.video || {};
       if (v.type === 'youtube') return 'https://www.youtube.com/watch?v=' + v.id;
       if (v.type === 'vimeo') return 'https://vimeo.com/' + v.id;
+      if (v.type === 'drive') return 'https://drive.google.com/file/d/' + v.id + '/view';
       return v.src || null;
     }
 
@@ -1221,7 +1235,8 @@
       if (url) {
         linkEl.href = url;
         linkEl.textContent =
-          v.type === 'youtube' ? 'Watch on YouTube' : v.type === 'vimeo' ? 'Watch on Vimeo' : 'Open full film';
+          v.type === 'youtube' ? 'Watch on YouTube' : v.type === 'vimeo' ? 'Watch on Vimeo'
+            : v.type === 'drive' ? 'Open in Google Drive' : 'Open full film';
         linkEl.parentElement.style.display = '';
       } else {
         linkEl.parentElement.style.display = 'none';

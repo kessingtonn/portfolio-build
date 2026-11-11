@@ -9,10 +9,15 @@ preview.html
 # written by tools/import-media.js before it edits data.js
 assets/js/data.js.backup
 
-# Large source media — keep exports only
+# Large source media — keep exports only.
+# The site's own web-sized clips (hero loops, 6-second hover
+# previews, each well under 5 MB) are committed; full films
+# stream from Google Drive / YouTube / Vimeo instead.
 *.mov
 *.MOV
 *.mp4
 *.webm
-!assets/video/hero-loop.mp4
-!assets/video/hero-loop.webm
+!assets/video/hero-loop*.mp4
+!assets/video/hero-loop*.webm
+!assets/video/work/**/*.mp4
+!assets/video/heroes/*.mp4
