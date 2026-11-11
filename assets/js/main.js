@@ -268,7 +268,12 @@
       orientation: p.orientation || (films[0] && films[0].orientation) || 'horizontal',
       hasFilm: films.length > 0,
       hasPhoto: gallery.length > 0,
-      cover: p.cover || (gallery[0] && gallery[0].src) || p.poster || null
+      cover: p.cover || (gallery[0] && gallery[0].src) || p.poster || null,
+      coverThumb: (function () {
+        const c = p.cover || (gallery[0] && gallery[0].src);
+        const hit = gallery.filter((g) => g.src === c)[0];
+        return (hit && hit.thumb) || c || p.poster || null;
+      })()
     });
   });
 
@@ -323,7 +328,7 @@
     if (project.wide) classes.push('card--wide');
     if (project.portrait || project.orientation === 'vertical') classes.push('card--portrait');
 
-    const media = mediaFor(project.cover, project.title, project.hue, String(index + 1).padStart(2, '0'));
+    const media = mediaFor(project.coverThumb, project.title, project.hue, String(index + 1).padStart(2, '0'));
     const preview = project.hasFilm ? previewFor(project, project.films[0]) : null;
     const badge = project.hasFilm
       ? '<span class="card__play"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg>' +
@@ -380,7 +385,7 @@
       '<button type="button" class="shot reveal' + (portraitShot ? ' shot--portrait' : '') + '" ' +
       'data-photo="' + escapeHtml(p.id) + ':' + entry.index + '" style="--r:' + entry.ratio + '" data-category="' + escapeHtml(p.category) + '">' +
       '<span class="shot__media">' +
-      mediaFor(ph.src, ph.alt || ph.caption || p.title, ph.hue == null ? p.hue : ph.hue, String(index + 1).padStart(2, '0')) +
+      mediaFor(ph.thumb || ph.src, ph.alt || ph.caption || p.title, ph.hue == null ? p.hue : ph.hue, String(index + 1).padStart(2, '0')) +
       '<span class="shot__zoom" aria-hidden="true">View</span>' +
       '</span>' +
       '<span class="shot__cap">' + escapeHtml(ph.caption || p.title) +
@@ -441,7 +446,19 @@
     card.addEventListener('blur', stop);
   }
 
+  function fadeIn(host) {
+    $$('img', host).forEach(function (img) {
+      const loaded = () => img.classList.add('is-loaded');
+      if (img.complete) loaded();
+      else {
+        img.addEventListener('load', loaded, { once: true });
+        img.addEventListener('error', loaded, { once: true });
+      }
+    });
+  }
+
   function finish(host) {
+    fadeIn(host);
     $$('.reveal', host).forEach((el) => el.classList.add('is-in'));
     if (canPreview) $$('[data-preview]', host).forEach(attachPreview);
   }
@@ -645,7 +662,7 @@
       const ph = entry.photo;
       attr = 'data-photo="' + escapeHtml(p.id) + ':' + entry.index + '"';
       media = ph.src
-        ? '<img class="cine__blur" src="' + escapeHtml(ph.src) + '" alt="" aria-hidden="true">' +
+        ? '<img class="cine__blur" src="' + escapeHtml(ph.thumb || ph.src) + '" alt="" aria-hidden="true">' +
           '<img src="' + escapeHtml(ph.src) + '" alt="' + escapeHtml(ph.alt || ph.caption || p.title) + '">'
         : placeholder(ph.hue == null ? p.hue : ph.hue, ph.caption || p.title, String(i + 1).padStart(2, '0'));
       caption = ph.caption || p.title;
@@ -663,7 +680,7 @@
 
   function thumbMarkup(grid, entry, i) {
     const p = entry.project;
-    const src = entry.film ? entry.film.poster : entry.photo.src;
+    const src = entry.film ? entry.film.poster : entry.photo.thumb || entry.photo.src;
     const hue = entry.photo && entry.photo.hue != null ? entry.photo.hue : p.hue;
     return (
       '<button type="button" class="cine__thumb" data-cine-go="' + i + '" style="--r:' + entry.ratio + '" ' +
@@ -736,6 +753,7 @@
       stage.appendChild(layer);
       const old = $$('.cine__layer', stage).filter((l) => l !== layer);
       $$('video', layer).forEach((v) => v.addEventListener('playing', () => v.classList.add('is-ready'), { once: true }));
+      fadeIn(layer);
       void layer.offsetWidth; /* commit the faded-out state so the crossfade runs */
       layer.classList.add('is-in');
       setTimeout(() => old.forEach((l) => l.remove()), reducedMotion ? 0 : 900);
@@ -1174,6 +1192,10 @@
 
     if (!(box.requestFullscreen || box.webkitRequestFullscreen)) fullBtn.hidden = true;
 
+    /* The claude.ai preview blocks embedded players from other sites;
+       a normal web host does not. */
+    const CAN_EMBED_DRIVE = !/(^|\.)(claude\.ai|claudeusercontent\.com|claude\.site)$/.test(location.hostname);
+
     function filmEmbed(project, film) {
       const v = film.video || {};
       if (v.type === 'youtube') {
@@ -1188,6 +1210,20 @@
           '<iframe src="https://player.vimeo.com/video/' + encodeURIComponent(v.id) +
           '?autoplay=1&title=0&byline=0&portrait=0" title="' + escapeHtml(film.title || project.title) +
           '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>'
+        );
+      }
+      if (v.type === 'drive' && !CAN_EMBED_DRIVE) {
+        /* hosts that refuse outside players (the claude.ai preview):
+           loop the preview here and send the full film to Drive */
+        const prev = film.preview || '';
+        return (
+          (prev
+            ? '<video src="' + escapeHtml(prev) + '" muted loop autoplay playsinline' +
+              (film.poster ? ' poster="' + escapeHtml(film.poster) + '"' : '') + '></video>'
+            : '') +
+          '<a class="lb__watch" href="https://drive.google.com/file/d/' + encodeURIComponent(v.id) +
+          '/view" target="_blank" rel="noopener">' +
+          '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg>Watch the full film</a>'
         );
       }
       if (v.type === 'drive') {

@@ -210,6 +210,9 @@ window.ZANGRID = (function () {
     return items.map(function (item, i) {
       return {
         src: item.src || null,
+        thumb: item.thumb || null,     /* small copy for grids; src opens in the viewer */
+        width: item.width || null,
+        height: item.height || null,
         caption: item.caption || '',
         alt: item.alt || item.caption || 'Photograph',
         orientation: item.orientation || 'landscape',
@@ -259,14 +262,14 @@ window.ZANGRID = (function () {
         }
       ],
       gallery: stills(32, [
-        { src: 'assets/img/work/iris-2025/01-the-kiss.jpg', caption: 'The kiss', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/iris-2025/02-the-arrival.jpg', caption: 'The arrival', width: 1920, height: 1080 },
-        { src: 'assets/img/work/iris-2025/03-the-groom.jpg', caption: 'The groom', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/iris-2025/04-under-the-arch.jpg', caption: 'Under the arch', width: 1920, height: 1080 },
-        { src: 'assets/img/work/iris-2025/05-the-groomsmen.jpg', caption: 'The groomsmen', width: 1920, height: 1080 },
-        { src: 'assets/img/work/iris-2025/06-best-man.jpg', caption: 'Best man', width: 1920, height: 1080 },
-        { src: 'assets/img/work/iris-2025/07-the-veil.jpg', caption: 'The veil', width: 2400, height: 1600 },
-        { src: 'assets/img/work/iris-2025/08-vows.jpg', caption: 'Vows', width: 2400, height: 1600 }
+        { src: 'assets/img/work/iris-2025/01-the-kiss.jpg', thumb: 'assets/img/work/iris-2025/01-the-kiss.sm.jpg', caption: 'The kiss', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/iris-2025/02-the-arrival.jpg', thumb: 'assets/img/work/iris-2025/02-the-arrival.sm.jpg', caption: 'The arrival', width: 1920, height: 1080 },
+        { src: 'assets/img/work/iris-2025/03-the-groom.jpg', thumb: 'assets/img/work/iris-2025/03-the-groom.sm.jpg', caption: 'The groom', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/iris-2025/04-under-the-arch.jpg', thumb: 'assets/img/work/iris-2025/04-under-the-arch.sm.jpg', caption: 'Under the arch', width: 1920, height: 1080 },
+        { src: 'assets/img/work/iris-2025/05-the-groomsmen.jpg', thumb: 'assets/img/work/iris-2025/05-the-groomsmen.sm.jpg', caption: 'The groomsmen', width: 1920, height: 1080 },
+        { src: 'assets/img/work/iris-2025/06-best-man.jpg', thumb: 'assets/img/work/iris-2025/06-best-man.sm.jpg', caption: 'Best man', width: 1920, height: 1080 },
+        { src: 'assets/img/work/iris-2025/07-the-veil.jpg', thumb: 'assets/img/work/iris-2025/07-the-veil.sm.jpg', caption: 'The veil', width: 2400, height: 1600 },
+        { src: 'assets/img/work/iris-2025/08-vows.jpg', thumb: 'assets/img/work/iris-2025/08-vows.sm.jpg', caption: 'Vows', width: 2400, height: 1600 }
       ]),
       details: {
         client: 'Iris',
@@ -299,15 +302,15 @@ window.ZANGRID = (function () {
         }
       ],
       gallery: stills(32, [
-        { src: 'assets/img/work/wendy-wedding/01-the-couple.jpg', caption: 'The couple', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/wendy-wedding/02-doorway.jpg', caption: 'Doorway', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/wendy-wedding/03-the-dress.jpg', caption: 'The dress', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/wendy-wedding/04-quiet-moment.jpg', caption: 'Quiet moment', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/wendy-wedding/05-the-getaway-car.jpg', caption: 'The getaway car', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/wendy-wedding/06-the-bridge.jpg', caption: 'The bridge', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/wendy-wedding/07-the-ring.jpg', caption: 'The ring', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/wendy-wedding/08-through-the-trees.jpg', caption: 'Through the trees', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/wendy-wedding/09-hidden-in-the-green.jpg', caption: 'Hidden in the green', width: 1920, height: 2400, orientation: 'portrait' }
+        { src: 'assets/img/work/wendy-wedding/01-the-couple.jpg', thumb: 'assets/img/work/wendy-wedding/01-the-couple.sm.jpg', caption: 'The couple', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/wendy-wedding/02-doorway.jpg', thumb: 'assets/img/work/wendy-wedding/02-doorway.sm.jpg', caption: 'Doorway', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/wendy-wedding/03-the-dress.jpg', thumb: 'assets/img/work/wendy-wedding/03-the-dress.sm.jpg', caption: 'The dress', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/wendy-wedding/04-quiet-moment.jpg', thumb: 'assets/img/work/wendy-wedding/04-quiet-moment.sm.jpg', caption: 'Quiet moment', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/wendy-wedding/05-the-getaway-car.jpg', thumb: 'assets/img/work/wendy-wedding/05-the-getaway-car.sm.jpg', caption: 'The getaway car', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/wendy-wedding/06-the-bridge.jpg', thumb: 'assets/img/work/wendy-wedding/06-the-bridge.sm.jpg', caption: 'The bridge', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/wendy-wedding/07-the-ring.jpg', thumb: 'assets/img/work/wendy-wedding/07-the-ring.sm.jpg', caption: 'The ring', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/wendy-wedding/08-through-the-trees.jpg', thumb: 'assets/img/work/wendy-wedding/08-through-the-trees.sm.jpg', caption: 'Through the trees', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/wendy-wedding/09-hidden-in-the-green.jpg', thumb: 'assets/img/work/wendy-wedding/09-hidden-in-the-green.sm.jpg', caption: 'Hidden in the green', width: 1920, height: 2400, orientation: 'portrait' }
       ]),
       details: {
         client: 'Wendy',
@@ -330,23 +333,23 @@ window.ZANGRID = (function () {
       portrait: true,
       cover: 'assets/img/work/tim-wedding/01-first-embrace.jpg',
       gallery: stills(32, [
-        { src: 'assets/img/work/tim-wedding/01-first-embrace.jpg', caption: 'First embrace', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/02-crossing-the-street.jpg', caption: 'Crossing the street', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/03-hand-in-hand.jpg', caption: 'Hand in hand', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/04-the-dip.jpg', caption: 'The dip', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/05-the-signpost.jpg', caption: 'The signpost', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/06-lifted.jpg', caption: 'Lifted', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/07-bow-and-smile.jpg', caption: 'Bow and smile', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/08-city-steps.jpg', caption: 'City steps', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/09-under-the-willows.jpg', caption: 'Under the willows', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/10-close.jpg', caption: 'Close', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/11-the-walk.jpg', caption: 'The walk', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/12-a-look.jpg', caption: 'A look', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/13-jump.jpg', caption: 'Jump', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/14-reaching-out.jpg', caption: 'Reaching out', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/15-kick.jpg', caption: 'Kick', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/16-running.jpg', caption: 'Running', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/tim-wedding/17-laughing.jpg', caption: 'Laughing', width: 1920, height: 2400, orientation: 'portrait' }
+        { src: 'assets/img/work/tim-wedding/01-first-embrace.jpg', thumb: 'assets/img/work/tim-wedding/01-first-embrace.sm.jpg', caption: 'First embrace', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/02-crossing-the-street.jpg', thumb: 'assets/img/work/tim-wedding/02-crossing-the-street.sm.jpg', caption: 'Crossing the street', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/03-hand-in-hand.jpg', thumb: 'assets/img/work/tim-wedding/03-hand-in-hand.sm.jpg', caption: 'Hand in hand', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/04-the-dip.jpg', thumb: 'assets/img/work/tim-wedding/04-the-dip.sm.jpg', caption: 'The dip', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/05-the-signpost.jpg', thumb: 'assets/img/work/tim-wedding/05-the-signpost.sm.jpg', caption: 'The signpost', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/06-lifted.jpg', thumb: 'assets/img/work/tim-wedding/06-lifted.sm.jpg', caption: 'Lifted', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/07-bow-and-smile.jpg', thumb: 'assets/img/work/tim-wedding/07-bow-and-smile.sm.jpg', caption: 'Bow and smile', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/08-city-steps.jpg', thumb: 'assets/img/work/tim-wedding/08-city-steps.sm.jpg', caption: 'City steps', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/09-under-the-willows.jpg', thumb: 'assets/img/work/tim-wedding/09-under-the-willows.sm.jpg', caption: 'Under the willows', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/10-close.jpg', thumb: 'assets/img/work/tim-wedding/10-close.sm.jpg', caption: 'Close', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/11-the-walk.jpg', thumb: 'assets/img/work/tim-wedding/11-the-walk.sm.jpg', caption: 'The walk', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/12-a-look.jpg', thumb: 'assets/img/work/tim-wedding/12-a-look.sm.jpg', caption: 'A look', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/13-jump.jpg', thumb: 'assets/img/work/tim-wedding/13-jump.sm.jpg', caption: 'Jump', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/14-reaching-out.jpg', thumb: 'assets/img/work/tim-wedding/14-reaching-out.sm.jpg', caption: 'Reaching out', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/15-kick.jpg', thumb: 'assets/img/work/tim-wedding/15-kick.sm.jpg', caption: 'Kick', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/16-running.jpg', thumb: 'assets/img/work/tim-wedding/16-running.sm.jpg', caption: 'Running', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/tim-wedding/17-laughing.jpg', thumb: 'assets/img/work/tim-wedding/17-laughing.sm.jpg', caption: 'Laughing', width: 1920, height: 2400, orientation: 'portrait' }
       ]),
       details: {
         client: 'Tim',
@@ -377,13 +380,13 @@ window.ZANGRID = (function () {
         }
       ],
       gallery: stills(32, [
-        { src: 'assets/img/work/mudi-and-piotr/01-under-the-flowers.jpg', caption: 'Under the flowers', width: 2400, height: 1600 },
-        { src: 'assets/img/work/mudi-and-piotr/02-the-entrance.jpg', caption: 'The entrance', width: 2400, height: 1600 },
-        { src: 'assets/img/work/mudi-and-piotr/03-close.jpg', caption: 'Close', width: 2400, height: 1600 },
-        { src: 'assets/img/work/mudi-and-piotr/04-dance-off.jpg', caption: 'Dance-off', width: 2400, height: 1600 },
-        { src: 'assets/img/work/mudi-and-piotr/05-forehead-to-forehead.jpg', caption: 'Forehead to forehead', width: 2400, height: 1600 },
-        { src: 'assets/img/work/mudi-and-piotr/06-first-dance.jpg', caption: 'First dance', width: 2400, height: 1718 },
-        { src: 'assets/img/work/mudi-and-piotr/07-the-room.jpg', caption: 'The room', width: 2400, height: 1600 }
+        { src: 'assets/img/work/mudi-and-piotr/01-under-the-flowers.jpg', thumb: 'assets/img/work/mudi-and-piotr/01-under-the-flowers.sm.jpg', caption: 'Under the flowers', width: 2400, height: 1600 },
+        { src: 'assets/img/work/mudi-and-piotr/02-the-entrance.jpg', thumb: 'assets/img/work/mudi-and-piotr/02-the-entrance.sm.jpg', caption: 'The entrance', width: 2400, height: 1600 },
+        { src: 'assets/img/work/mudi-and-piotr/03-close.jpg', thumb: 'assets/img/work/mudi-and-piotr/03-close.sm.jpg', caption: 'Close', width: 2400, height: 1600 },
+        { src: 'assets/img/work/mudi-and-piotr/04-dance-off.jpg', thumb: 'assets/img/work/mudi-and-piotr/04-dance-off.sm.jpg', caption: 'Dance-off', width: 2400, height: 1600 },
+        { src: 'assets/img/work/mudi-and-piotr/05-forehead-to-forehead.jpg', thumb: 'assets/img/work/mudi-and-piotr/05-forehead-to-forehead.sm.jpg', caption: 'Forehead to forehead', width: 2400, height: 1600 },
+        { src: 'assets/img/work/mudi-and-piotr/06-first-dance.jpg', thumb: 'assets/img/work/mudi-and-piotr/06-first-dance.sm.jpg', caption: 'First dance', width: 2400, height: 1718 },
+        { src: 'assets/img/work/mudi-and-piotr/07-the-room.jpg', thumb: 'assets/img/work/mudi-and-piotr/07-the-room.sm.jpg', caption: 'The room', width: 2400, height: 1600 }
       ]),
       details: {
         client: 'Mudi & Piotr',
@@ -493,12 +496,12 @@ window.ZANGRID = (function () {
       portrait: true,
       cover: 'assets/img/work/wendy-gold/01-gold.jpg',
       gallery: stills(200, [
-        { src: 'assets/img/work/wendy-gold/01-gold.jpg', caption: 'Gold', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/wendy-gold/02-the-lobby.jpg', caption: 'The lobby', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/wendy-gold/03-blue-velvet.jpg', caption: 'Blue velvet', width: 1714, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/wendy-gold/04-over-the-shoulder.jpg', caption: 'Over the shoulder', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/wendy-gold/05-earrings.jpg', caption: 'Earrings', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/wendy-gold/06-the-terrace.jpg', caption: 'The terrace', width: 1920, height: 2400, orientation: 'portrait' }
+        { src: 'assets/img/work/wendy-gold/01-gold.jpg', thumb: 'assets/img/work/wendy-gold/01-gold.sm.jpg', caption: 'Gold', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/wendy-gold/02-the-lobby.jpg', thumb: 'assets/img/work/wendy-gold/02-the-lobby.sm.jpg', caption: 'The lobby', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/wendy-gold/03-blue-velvet.jpg', thumb: 'assets/img/work/wendy-gold/03-blue-velvet.sm.jpg', caption: 'Blue velvet', width: 1714, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/wendy-gold/04-over-the-shoulder.jpg', thumb: 'assets/img/work/wendy-gold/04-over-the-shoulder.sm.jpg', caption: 'Over the shoulder', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/wendy-gold/05-earrings.jpg', thumb: 'assets/img/work/wendy-gold/05-earrings.sm.jpg', caption: 'Earrings', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/wendy-gold/06-the-terrace.jpg', thumb: 'assets/img/work/wendy-gold/06-the-terrace.sm.jpg', caption: 'The terrace', width: 1920, height: 2400, orientation: 'portrait' }
       ]),
       details: {
         client: 'Wendy in Gold',
@@ -520,11 +523,11 @@ window.ZANGRID = (function () {
       portrait: true,
       cover: 'assets/img/work/studio-couple/01-close.jpg',
       gallery: stills(200, [
-        { src: 'assets/img/work/studio-couple/01-close.jpg', caption: 'Close', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/studio-couple/02-seated.jpg', caption: 'Seated', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/studio-couple/03-standing.jpg', caption: 'Standing', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/studio-couple/04-on-the-chair.jpg', caption: 'On the chair', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/studio-couple/05-embrace.jpg', caption: 'Embrace', width: 1822, height: 2277, orientation: 'portrait' }
+        { src: 'assets/img/work/studio-couple/01-close.jpg', thumb: 'assets/img/work/studio-couple/01-close.sm.jpg', caption: 'Close', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/studio-couple/02-seated.jpg', thumb: 'assets/img/work/studio-couple/02-seated.sm.jpg', caption: 'Seated', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/studio-couple/03-standing.jpg', thumb: 'assets/img/work/studio-couple/03-standing.sm.jpg', caption: 'Standing', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/studio-couple/04-on-the-chair.jpg', thumb: 'assets/img/work/studio-couple/04-on-the-chair.sm.jpg', caption: 'On the chair', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/studio-couple/05-embrace.jpg', thumb: 'assets/img/work/studio-couple/05-embrace.sm.jpg', caption: 'Embrace', width: 1822, height: 2277, orientation: 'portrait' }
       ]),
       details: {
         client: 'Studio Couple',
@@ -546,9 +549,9 @@ window.ZANGRID = (function () {
       portrait: true,
       cover: 'assets/img/work/oge/01-seated.jpg',
       gallery: stills(200, [
-        { src: 'assets/img/work/oge/01-seated.jpg', caption: 'Seated', width: 1080, height: 1350, orientation: 'portrait' },
-        { src: 'assets/img/work/oge/02-hands-in-hair.jpg', caption: 'Hands in hair', width: 1080, height: 1350, orientation: 'portrait' },
-        { src: 'assets/img/work/oge/03-crouched.jpg', caption: 'Crouched', width: 1080, height: 1350, orientation: 'portrait' }
+        { src: 'assets/img/work/oge/01-seated.jpg', thumb: 'assets/img/work/oge/01-seated.sm.jpg', caption: 'Seated', width: 1080, height: 1350, orientation: 'portrait' },
+        { src: 'assets/img/work/oge/02-hands-in-hair.jpg', thumb: 'assets/img/work/oge/02-hands-in-hair.sm.jpg', caption: 'Hands in hair', width: 1080, height: 1350, orientation: 'portrait' },
+        { src: 'assets/img/work/oge/03-crouched.jpg', thumb: 'assets/img/work/oge/03-crouched.sm.jpg', caption: 'Crouched', width: 1080, height: 1350, orientation: 'portrait' }
       ]),
       details: {
         client: 'Oge',
@@ -580,7 +583,7 @@ window.ZANGRID = (function () {
         }
       ],
       gallery: stills(200, [
-        { src: 'assets/img/work/georgia/01-georgia.jpg', caption: 'Georgia', width: 1920, height: 2400, orientation: 'portrait' }
+        { src: 'assets/img/work/georgia/01-georgia.jpg', thumb: 'assets/img/work/georgia/01-georgia.sm.jpg', caption: 'Georgia', width: 1920, height: 2400, orientation: 'portrait' }
       ]),
       details: {
         client: 'Georgia',
@@ -612,7 +615,7 @@ window.ZANGRID = (function () {
         }
       ],
       gallery: stills(200, [
-        { src: 'assets/img/work/nenye/01-nenye.jpg', caption: 'Nenye', width: 1920, height: 2400, orientation: 'portrait' }
+        { src: 'assets/img/work/nenye/01-nenye.jpg', thumb: 'assets/img/work/nenye/01-nenye.sm.jpg', caption: 'Nenye', width: 1920, height: 2400, orientation: 'portrait' }
       ]),
       details: {
         client: 'Nenye',
@@ -687,7 +690,7 @@ window.ZANGRID = (function () {
         }
       ],
       gallery: stills(200, [
-        { src: 'assets/img/work/golden-hour/01-studio-portrait.jpg', caption: 'Studio portrait', width: 1080, height: 1350, orientation: 'portrait' }
+        { src: 'assets/img/work/golden-hour/01-studio-portrait.jpg', thumb: 'assets/img/work/golden-hour/01-studio-portrait.sm.jpg', caption: 'Studio portrait', width: 1080, height: 1350, orientation: 'portrait' }
       ]),
       details: {
         client: 'Golden Hour',
@@ -721,11 +724,11 @@ window.ZANGRID = (function () {
         }
       ],
       gallery: stills(330, [
-        { src: 'assets/img/work/jimenez/01-portrait.jpg', caption: 'Portrait', width: 1080, height: 1350, orientation: 'portrait' },
-        { src: 'assets/img/work/jimenez/02-caf.jpg', caption: 'Café', width: 1080, height: 1350, orientation: 'portrait' },
-        { src: 'assets/img/work/jimenez/03-night.jpg', caption: 'Night', width: 1080, height: 1350, orientation: 'portrait' },
-        { src: 'assets/img/work/jimenez/04-seated.jpg', caption: 'Seated', width: 1080, height: 1350, orientation: 'portrait' },
-        { src: 'assets/img/work/jimenez/05-street.jpg', caption: 'Street', width: 1080, height: 1350, orientation: 'portrait' }
+        { src: 'assets/img/work/jimenez/01-portrait.jpg', thumb: 'assets/img/work/jimenez/01-portrait.sm.jpg', caption: 'Portrait', width: 1080, height: 1350, orientation: 'portrait' },
+        { src: 'assets/img/work/jimenez/02-caf.jpg', thumb: 'assets/img/work/jimenez/02-caf.sm.jpg', caption: 'Café', width: 1080, height: 1350, orientation: 'portrait' },
+        { src: 'assets/img/work/jimenez/03-night.jpg', thumb: 'assets/img/work/jimenez/03-night.sm.jpg', caption: 'Night', width: 1080, height: 1350, orientation: 'portrait' },
+        { src: 'assets/img/work/jimenez/04-seated.jpg', thumb: 'assets/img/work/jimenez/04-seated.sm.jpg', caption: 'Seated', width: 1080, height: 1350, orientation: 'portrait' },
+        { src: 'assets/img/work/jimenez/05-street.jpg', thumb: 'assets/img/work/jimenez/05-street.sm.jpg', caption: 'Street', width: 1080, height: 1350, orientation: 'portrait' }
       ]),
       details: {
         client: 'Jimenez',
@@ -748,12 +751,12 @@ window.ZANGRID = (function () {
       portrait: true,
       cover: 'assets/img/work/tunde/01-bench.jpg',
       gallery: stills(330, [
-        { src: 'assets/img/work/tunde/01-bench.jpg', caption: 'Bench', width: 1080, height: 1350, orientation: 'portrait' },
-        { src: 'assets/img/work/tunde/02-saver-menu.jpg', caption: 'Saver menu', width: 1080, height: 1350, orientation: 'portrait' },
-        { src: 'assets/img/work/tunde/03-car-park-walk.jpg', caption: 'Car park walk', width: 1080, height: 1350, orientation: 'portrait' },
-        { src: 'assets/img/work/tunde/04-phone-box.jpg', caption: 'Phone box', width: 1080, height: 1350, orientation: 'portrait' },
-        { src: 'assets/img/work/tunde/05-jacket-off.jpg', caption: 'Jacket off', width: 1080, height: 1350, orientation: 'portrait' },
-        { src: 'assets/img/work/tunde/06-relaxed.jpg', caption: 'Relaxed', width: 1080, height: 1350, orientation: 'portrait' }
+        { src: 'assets/img/work/tunde/01-bench.jpg', thumb: 'assets/img/work/tunde/01-bench.sm.jpg', caption: 'Bench', width: 1080, height: 1350, orientation: 'portrait' },
+        { src: 'assets/img/work/tunde/02-saver-menu.jpg', thumb: 'assets/img/work/tunde/02-saver-menu.sm.jpg', caption: 'Saver menu', width: 1080, height: 1350, orientation: 'portrait' },
+        { src: 'assets/img/work/tunde/03-car-park-walk.jpg', thumb: 'assets/img/work/tunde/03-car-park-walk.sm.jpg', caption: 'Car park walk', width: 1080, height: 1350, orientation: 'portrait' },
+        { src: 'assets/img/work/tunde/04-phone-box.jpg', thumb: 'assets/img/work/tunde/04-phone-box.sm.jpg', caption: 'Phone box', width: 1080, height: 1350, orientation: 'portrait' },
+        { src: 'assets/img/work/tunde/05-jacket-off.jpg', thumb: 'assets/img/work/tunde/05-jacket-off.sm.jpg', caption: 'Jacket off', width: 1080, height: 1350, orientation: 'portrait' },
+        { src: 'assets/img/work/tunde/06-relaxed.jpg', thumb: 'assets/img/work/tunde/06-relaxed.sm.jpg', caption: 'Relaxed', width: 1080, height: 1350, orientation: 'portrait' }
       ]),
       details: {
         client: 'Tunde',
@@ -929,13 +932,13 @@ window.ZANGRID = (function () {
       portrait: true,
       cover: 'assets/img/work/asambe/01-behind-the-decks.jpg',
       gallery: stills(260, [
-        { src: 'assets/img/work/asambe/01-behind-the-decks.jpg', caption: 'Behind the decks', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/asambe/02-the-floor.jpg', caption: 'The floor', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/asambe/03-on-the-decks.jpg', caption: 'On the decks', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/asambe/04-hands-up.jpg', caption: 'Hands up', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/asambe/05-wings.jpg', caption: 'Wings', width: 1080, height: 1350, orientation: 'portrait' },
-        { src: 'assets/img/work/asambe/06-the-crowd.jpg', caption: 'The crowd', width: 1920, height: 2400, orientation: 'portrait' },
-        { src: 'assets/img/work/asambe/07-the-hype.jpg', caption: 'The hype', width: 1920, height: 2400, orientation: 'portrait' }
+        { src: 'assets/img/work/asambe/01-behind-the-decks.jpg', thumb: 'assets/img/work/asambe/01-behind-the-decks.sm.jpg', caption: 'Behind the decks', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/asambe/02-the-floor.jpg', thumb: 'assets/img/work/asambe/02-the-floor.sm.jpg', caption: 'The floor', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/asambe/03-on-the-decks.jpg', thumb: 'assets/img/work/asambe/03-on-the-decks.sm.jpg', caption: 'On the decks', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/asambe/04-hands-up.jpg', thumb: 'assets/img/work/asambe/04-hands-up.sm.jpg', caption: 'Hands up', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/asambe/05-wings.jpg', thumb: 'assets/img/work/asambe/05-wings.sm.jpg', caption: 'Wings', width: 1080, height: 1350, orientation: 'portrait' },
+        { src: 'assets/img/work/asambe/06-the-crowd.jpg', thumb: 'assets/img/work/asambe/06-the-crowd.sm.jpg', caption: 'The crowd', width: 1920, height: 2400, orientation: 'portrait' },
+        { src: 'assets/img/work/asambe/07-the-hype.jpg', thumb: 'assets/img/work/asambe/07-the-hype.sm.jpg', caption: 'The hype', width: 1920, height: 2400, orientation: 'portrait' }
       ]),
       details: {
         client: 'Asambe',
@@ -1291,7 +1294,7 @@ window.ZANGRID = (function () {
         }
       ],
       gallery: stills(45, [
-        { src: 'assets/img/work/the-suit/01-reading-room.jpg', caption: 'Reading room', width: 1080, height: 1350, orientation: 'portrait' }
+        { src: 'assets/img/work/the-suit/01-reading-room.jpg', thumb: 'assets/img/work/the-suit/01-reading-room.sm.jpg', caption: 'Reading room', width: 1080, height: 1350, orientation: 'portrait' }
       ]),
       details: {
         client: 'The Suit',
