@@ -21,8 +21,26 @@ window.ZANGRID = (function () {
     phone: '+44 7700 900 118',
     location: 'London · Travelling worldwide',
     instagram: 'https://instagram.com/zangridstudios',
+    tiktok: 'https://www.tiktok.com/@zangridstudios',
     vimeo: 'https://vimeo.com/zangridstudios',
     youtube: 'https://youtube.com/@zangridstudios',
+
+    /* shown on the social cards — keep them in step with the links above */
+    instagramHandle: '@zangridstudios',
+    tiktokHandle: '@zangridstudios',
+
+    /* the small badge on the home hero; empty hides it */
+    bookingNote: 'Now booking 2026 & 2027',
+
+    /* WHERE ENQUIRIES ARRIVE
+       Put the studio's Gmail address here and the enquiry form
+       delivers straight to that inbox through FormSubmit (free,
+       no account). The first enquiry triggers a one-time
+       "Activate form" email from FormSubmit to this address —
+       click it once and every enquiry after lands in Gmail.
+       Leave it empty and visitors get "Open in Gmail" / "Open in
+       email app" buttons with the message already written. */
+    enquiryEmail: '',
 
     /* Enquiry form delivery.
        Paste a form endpoint (Formspree, Basin, Netlify Forms

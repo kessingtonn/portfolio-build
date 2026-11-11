@@ -3,8 +3,10 @@
    · prefills service/package from ?service=&package=
    · repopulates the package list when the service changes
    · validates inline, accessibly
-   · posts to ZANGRID.site.formEndpoint when set,
-     otherwise falls back to a pre-filled email
+   · posts to site.formEndpoint, or to the studio's Gmail
+     (site.enquiryEmail) through FormSubmit; otherwise offers
+     a ready-written message in Gmail or the email app
+   · honeypot, 3-second time trap and a resend cooldown
    ========================================================= */
 (function () {
   'use strict';
@@ -17,6 +19,14 @@
   const PACKS = DATA.packages || {};
   const $ = (sel, root) => (root || document).querySelector(sel);
   const $$ = (sel, root) => Array.prototype.slice.call((root || document).querySelectorAll(sel));
+
+  /* Where enquiries go: an explicit endpoint wins; otherwise the
+     studio's Gmail via FormSubmit; otherwise a pre-written email. */
+  const INBOX = SITE.enquiryEmail || SITE.email || '';
+  const ENDPOINT = SITE.formEndpoint ||
+    (SITE.enquiryEmail ? 'https://formsubmit.co/ajax/' + encodeURIComponent(SITE.enquiryEmail) : '');
+  const OPENED_AT = Date.now();
+  let lastSent = 0;
 
   const statusEl = $('[data-form-status]', form);
   const submitBtn = $('[data-submit]', form);
@@ -188,11 +198,15 @@
     out.serviceLabel = pack ? pack.label : out.service || '';
     out.packageLabel = tier ? tier.name + ' (' + tier.price + ')' : out.package === 'custom' ? 'Something custom' : 'No preference';
     out._subject = 'Enquiry — ' + out.serviceLabel + ' — ' + (out.name || 'New enquiry');
+    /* FormSubmit: tidy table email, replies go straight to the client */
+    out._template = 'table';
+    out._replyto = out.email || '';
+    out._captcha = 'false';
     return out;
   }
 
-  function mailtoFallback(body) {
-    const lines = [
+  function emailLines(body) {
+    return [
       'Name: ' + (body.name || ''),
       'Email: ' + (body.email || ''),
       'Phone: ' + (body.phone || '—'),
@@ -204,11 +218,32 @@
       'Heard via: ' + (body.source || '—'),
       '',
       body.message || ''
-    ];
+    ].join('\n');
+  }
+
+  function mailtoFallback(body) {
     return (
-      'mailto:' + (SITE.email || '') +
+      'mailto:' + INBOX +
       '?subject=' + encodeURIComponent(body._subject) +
-      '&body=' + encodeURIComponent(lines.join('\n'))
+      '&body=' + encodeURIComponent(emailLines(body))
+    );
+  }
+
+  /* opens a ready-written message in the visitor's Gmail */
+  function gmailFallback(body) {
+    return (
+      'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(INBOX) +
+      '&su=' + encodeURIComponent(body._subject) +
+      '&body=' + encodeURIComponent(emailLines(body))
+    );
+  }
+
+  function sendButtons(body) {
+    return (
+      '<div class="form__send">' +
+      '<a class="btn btn--gold" href="' + gmailFallback(body) + '" target="_blank" rel="noopener noreferrer">Send with Gmail</a>' +
+      '<a class="btn btn--glass" href="' + mailtoFallback(body) + '">Use my email app</a>' +
+      '</div>'
     );
   }
 
@@ -217,6 +252,13 @@
 
     const honeypot = $('.hp-input', form);
     if (honeypot && honeypot.value) return; /* bot */
+    /* bots fill and submit in a blink; people take longer than 3 s */
+    if (Date.now() - OPENED_AT < 3000) return;
+    /* one send per 20 s, so a double-tap cannot send twice */
+    if (Date.now() - lastSent < 20000) {
+      say('ok', '<p>Your enquiry is already on its way — give it a moment.</p>');
+      return;
+    }
 
     /* both run — no short-circuiting, so every field gets marked */
     const fieldsOk = controls.map(validateControl).every(Boolean);
@@ -230,12 +272,12 @@
 
     const body = payload();
 
-    if (!SITE.formEndpoint) {
+    if (!ENDPOINT) {
       say(
         'ok',
-        '<p><strong>Almost there.</strong> This site has no form endpoint configured yet, so your enquiry has been prepared as an email instead.</p>' +
-          '<p style="margin-top:.75rem"><a class="link-u" href="' + mailtoFallback(body) + '">Open it in your email app</a>' +
-          ' — or write to <a class="link-u" href="mailto:' + (SITE.email || '') + '">' + (SITE.email || '') + '</a>.</p>'
+        '<p><strong>Your enquiry is written — one tap to send it.</strong></p>' +
+          '<p style="margin-top:.5rem" class="muted">Choose how to send it to ' + INBOX + ':</p>' +
+          sendButtons(body)
       );
       return;
     }
@@ -243,13 +285,14 @@
     submitBtn.setAttribute('aria-disabled', 'true');
     submitBtn.textContent = 'Sending…';
 
-    fetch(SITE.formEndpoint, {
+    fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify(body)
     })
       .then(function (response) {
         if (!response.ok) throw new Error('Request failed with ' + response.status);
+        lastSent = Date.now();
         form.reset();
         fillPackages(currentService(), null);
         say(
@@ -263,8 +306,8 @@
       .catch(function () {
         say(
           'error',
-          '<p><strong>That did not send.</strong> Something went wrong on the way — please ' +
-            '<a class="link-u" href="' + mailtoFallback(body) + '">send it as an email</a> instead and we will pick it up.</p>'
+          '<p><strong>That did not send.</strong> Something went wrong on the way — your message is ' +
+            'still written, so send it by email instead and we will pick it up.</p>' + sendButtons(body)
         );
       })
       .then(function () {

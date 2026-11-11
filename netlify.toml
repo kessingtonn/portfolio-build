@@ -1,0 +1,6 @@
+# Netlify: there is no build — tools/ci-site.sh copies the public
+# files (pages, assets, headers) into _site and Netlify serves that.
+# Security headers come from _headers.
+[build]
+  command = "sh tools/ci-site.sh _site"
+  publish = "_site"

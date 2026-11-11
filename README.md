@@ -238,6 +238,67 @@ field (`company`) is dropped before sending.
 Package buttons deep-link into the form: `enquiry.html?service=brand&package=brand-story`
 preselects the service, the package and the sidebar summary.
 
+## Going live (public website)
+
+The site is static files with no build step. Pick one host:
+
+**GitHub Pages (free, already set up in this repo)**
+1. On GitHub, open the repo, then **Settings → Pages**. Under *Build and deployment* set
+   **Source: GitHub Actions**.
+2. Merge the work into the default branch. `.github/workflows/pages.yml` checks every media path,
+   copies only the public files and publishes them. The address appears under *Settings → Pages*
+   (`https://<user>.github.io/portfolio-build/`), usually within a minute.
+3. Custom domain: add it on that same page, then point the domain's DNS at GitHub, either a `CNAME`
+   to `<user>.github.io` or the four GitHub `A` records. Tick *Enforce HTTPS*.
+
+**Netlify or Cloudflare Pages (also free; these also apply the security headers)**
+Import the repo. The build command and output folder are in `netlify.toml` (for Cloudflare use the
+same values: command `sh tools/ci-site.sh _site`, output `_site`). `_headers` adds a strict
+Content-Security-Policy, HSTS, `X-Frame-Options`, `nosniff`, `Referrer-Policy` and
+`Permissions-Policy` to every page.
+
+## Enquiries straight to Gmail
+
+Set `site.enquiryEmail` in `assets/js/data.js` to the studio's Gmail address. The form then posts
+through [FormSubmit](https://formsubmit.co), which is free and needs no account:
+
+1. Send yourself a test enquiry from the live site.
+2. FormSubmit emails that Gmail address once, asking you to **Activate** the form. Click it.
+3. From then on every enquiry arrives as a tidy table email. **Reply** answers the client directly.
+
+Tip: after activating, FormSubmit gives you a random alias for your address. Use it as
+`site.formEndpoint = 'https://formsubmit.co/ajax/<alias>'` so your real address never appears in
+the page source.
+
+With no address set, the form still works: it writes the email for the visitor and offers **Send
+with Gmail** or **Use my email app**. The enquiry page's contact card and the phone action bar also
+link straight to the inbox, with a copy button.
+
+Spam protection: a hidden honeypot field, a 3-second time trap (bots submit instantly), and a
+20-second resend cooldown.
+
+## Instagram and TikTok
+
+Set `site.instagram`, `site.tiktok` and their `…Handle` values in `data.js`. They feed:
+- the **Follow the work** section on the home page (a card per network plus a swipeable strip of
+  your vertical films)
+- icons in the desktop nav, the phone action bar, and the enquiry contact card
+- the footer and mobile menu
+
+They are links rather than embedded feeds on purpose. Instagram and TikTok embeds load several
+megabytes of third-party script, track visitors, and would weaken the security policy.
+
+## Security
+
+- No inline JavaScript and no third-party scripts, so the Content-Security-Policy allows scripts from
+  this site only.
+- Fonts are self-hosted (`assets/fonts`), so no request reaches Google and nothing breaks if a CDN
+  does.
+- Every outbound link uses `rel="noopener noreferrer"`.
+- All data rendered into pages is escaped.
+- No secrets in the repository. The only external services are FormSubmit for enquiries and Google
+  Drive for full films.
+
 ## Seeing it without deploying
 
 ```bash

@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; frame-src https://drive.google.com https://www.youtube-nocookie.com https://player.vimeo.com; connect-src 'self' https://formsubmit.co; form-action 'self' https://formsubmit.co mailto:; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Work — Zangrid Studios</title>
 <meta name="description" content="Wedding films, portrait sittings, brand campaigns and UGC by Zangrid Studios. Watch the films and browse recent projects.">
 <meta name="theme-color" content="#0b0b0c">
@@ -13,9 +15,8 @@
 <link rel="icon" href="assets/img/brand/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="assets/img/brand/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="preload" href="assets/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/main.css">
 </head>
 <body>
@@ -74,7 +75,8 @@
   </nav>
   <div class="menu__meta">
     <a href="mailto:hello@zangridstudios.com" data-site="email">hello@zangridstudios.com</a>
-    <a href="https://instagram.com/zangridstudios" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://instagram.com/zangridstudios" data-site="instagram" data-site-href-only target="_blank" rel="noopener noreferrer">Instagram</a>
+    <a href="https://www.tiktok.com/@zangridstudios" data-site="tiktok" data-site-href-only target="_blank" rel="noopener noreferrer">TikTok</a>
     <span data-site="location">London · Travelling worldwide</span>
   </div>
 </div>
@@ -156,9 +158,9 @@
         <p class="lede reveal">Full-length wedding features, behind-the-scenes and client channels are collected
           on our video channels — subscribe there if you want the long versions rather than the highlights.</p>
         <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:2rem" class="reveal" data-delay="1">
-          <a class="btn" data-site="vimeo" data-site-href-only href="https://vimeo.com/zangridstudios" target="_blank" rel="noopener">Vimeo channel</a>
-          <a class="btn" data-site="youtube" data-site-href-only href="https://youtube.com/@zangridstudios" target="_blank" rel="noopener">YouTube channel</a>
-          <a class="btn" data-site="instagram" data-site-href-only href="https://instagram.com/zangridstudios" target="_blank" rel="noopener">Instagram</a>
+          <a class="btn" data-site="vimeo" data-site-href-only href="https://vimeo.com/zangridstudios" target="_blank" rel="noopener noreferrer">Vimeo channel</a>
+          <a class="btn" data-site="youtube" data-site-href-only href="https://youtube.com/@zangridstudios" target="_blank" rel="noopener noreferrer">YouTube channel</a>
+          <a class="btn" data-site="instagram" data-site-href-only href="https://instagram.com/zangridstudios" target="_blank" rel="noopener noreferrer">Instagram</a>
         </div>
       </div>
     </div>
@@ -210,9 +212,10 @@
       <div>
         <h4>Follow</h4>
         <ul>
-          <li><a href="https://instagram.com/zangridstudios" data-site="instagram" data-site-href-only target="_blank" rel="noopener">Instagram</a></li>
-          <li><a href="https://vimeo.com/zangridstudios" data-site="vimeo" data-site-href-only target="_blank" rel="noopener">Vimeo</a></li>
-          <li><a href="https://youtube.com/@zangridstudios" data-site="youtube" data-site-href-only target="_blank" rel="noopener">YouTube</a></li>
+          <li><a href="https://instagram.com/zangridstudios" data-site="instagram" data-site-href-only target="_blank" rel="noopener noreferrer">Instagram</a></li>
+          <li><a href="https://www.tiktok.com/@zangridstudios" data-site="tiktok" data-site-href-only target="_blank" rel="noopener noreferrer">TikTok</a></li>
+          <li><a href="https://vimeo.com/zangridstudios" data-site="vimeo" data-site-href-only target="_blank" rel="noopener noreferrer">Vimeo</a></li>
+          <li><a href="https://youtube.com/@zangridstudios" data-site="youtube" data-site-href-only target="_blank" rel="noopener noreferrer">YouTube</a></li>
         </ul>
       </div>
     </div>

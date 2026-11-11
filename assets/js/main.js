@@ -892,7 +892,7 @@
       key: 'zg-layout:' + location.pathname + ':' + (cat || 'all') + ':' + kind
     };
     grid._zg.layout = layoutFor(grid);
-    if (items.length) grid._zg.bar = toolbar(grid);
+    if (items.length && !grid.hasAttribute('data-no-switch')) grid._zg.bar = toolbar(grid);
     dragScroll(grid);
     present(grid);
   }
@@ -1479,7 +1479,142 @@
   })();
 
   /* ---------------------------------------------------
-     8. Studio details injected from data.js
+     8. Social + direct contact
+     Instagram and TikTok are linked, not embedded: no
+     third-party scripts, nothing tracking visitors, and
+     the page stays fast. Everything reads from data.js.
+     --------------------------------------------------- */
+  (function social() {
+    const SITE = DATA.site || {};
+    const INBOX = SITE.enquiryEmail || SITE.email || '';
+    const onEnquiry = /enquiry\.html$/.test(location.pathname) || !!$('[data-enquiry]');
+
+    const ICON = {
+      instagram:
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/>' +
+        '<circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor"/></svg>',
+      tiktok:
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6 0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64 0 3.33 2.76 5.7 5.69 5.7 3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48z"/></svg>',
+      mail:
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/>' +
+        '<path d="M4 7l8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+      copy:
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/>' +
+        '<path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>'
+    };
+
+    const handle = (h, url) => h || (url ? '@' + url.replace(/\/+$/, '').split('/').pop().replace(/^@/, '') : '');
+    const ext = 'target="_blank" rel="noopener noreferrer"';
+    const gmailTo = (to) => 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(to);
+
+    const NETS = [
+      SITE.instagram && { key: 'instagram', name: 'Instagram', url: SITE.instagram, handle: handle(SITE.instagramHandle, SITE.instagram),
+        line: 'Galleries, carousels and the stills behind every film.' },
+      SITE.tiktok && { key: 'tiktok', name: 'TikTok', url: SITE.tiktok, handle: handle(SITE.tiktokHandle, SITE.tiktok),
+        line: 'Vertical cuts, transitions and behind-the-scenes.' }
+    ].filter(Boolean);
+
+    /* booking badge */
+    if (!SITE.bookingNote) $$('.status-pill').forEach((el) => el.remove());
+
+    /* home: one card per network */
+    $$('[data-social-cards]').forEach(function (host) {
+      host.innerHTML = NETS.map(function (n) {
+        return (
+          '<a class="social-card social-card--' + n.key + ' reveal" href="' + escapeHtml(n.url) + '" ' + ext + '>' +
+          '<span class="social-card__icon">' + ICON[n.key] + '</span>' +
+          '<span class="social-card__body"><span class="social-card__net">' + n.name + '</span>' +
+          '<span class="social-card__handle">' + escapeHtml(n.handle) + '</span>' +
+          '<span class="social-card__line">' + n.line + '</span></span>' +
+          '<span class="social-card__cta">Follow</span>' +
+          '</a>'
+        );
+      }).join('');
+      $$('.reveal', host).forEach((el) => el.classList.add('is-in'));
+    });
+
+    /* copy-to-clipboard, with a select-the-text fallback */
+    function copyButton(text) {
+      return '<button type="button" class="copy-btn" data-copy="' + escapeHtml(text) + '" aria-label="Copy ' + escapeHtml(text) + '">' +
+        ICON.copy + '<span>Copy</span></button>';
+    }
+    document.addEventListener('click', function (e) {
+      const btn = e.target.closest('[data-copy]');
+      if (!btn) return;
+      const text = btn.getAttribute('data-copy');
+      const done = () => {
+        const label = $('span', btn);
+        if (label) { label.textContent = 'Copied'; setTimeout(() => { label.textContent = 'Copy'; }, 1800); }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy the address:', text); });
+      } else {
+        window.prompt('Copy the address:', text);
+      }
+    });
+
+    /* "or write to …" under calls to action */
+    $$('[data-contact-direct]').forEach(function (el) {
+      if (!INBOX) return el.remove();
+      el.innerHTML = 'or write to <a class="link-u" href="mailto:' + escapeHtml(INBOX) + '">' + escapeHtml(INBOX) + '</a> ' + copyButton(INBOX);
+    });
+
+    /* enquiry sidebar */
+    $$('[data-contact-card]').forEach(function (host) {
+      host.innerHTML =
+        '<p class="eyebrow">Prefer to write directly?</p>' +
+        (INBOX
+          ? '<div class="contact-card__mail"><a class="contact-card__addr" href="mailto:' + escapeHtml(INBOX) + '">' + escapeHtml(INBOX) + '</a>' + copyButton(INBOX) + '</div>' +
+            '<div class="contact-card__row">' +
+            '<a class="btn btn--glass btn--sm" href="' + gmailTo(INBOX) + '" ' + ext + '>' + ICON.mail + 'Open in Gmail</a>' +
+            '<a class="btn btn--glass btn--sm" href="mailto:' + escapeHtml(INBOX) + '">Email app</a></div>'
+          : '') +
+        (SITE.phone ? '<a class="link-u" href="tel:' + SITE.phone.replace(/\s/g, '') + '">' + escapeHtml(SITE.phone) + '</a>' : '') +
+        (NETS.length
+          ? '<p class="muted contact-card__note">Or message us where you already are:</p><div class="contact-card__row">' +
+            NETS.map((n) => '<a class="social-chip" href="' + escapeHtml(n.url) + '" ' + ext + '>' + ICON[n.key] + n.name + '</a>').join('') +
+            '</div>'
+          : '') +
+        (SITE.location ? '<p class="muted contact-card__note">' + escapeHtml(SITE.location) + '</p>' : '');
+    });
+
+    /* desktop nav: small icons beside Enquire */
+    const navLinks = $('.nav__links');
+    if (navLinks && NETS.length) {
+      const wrap = document.createElement('span');
+      wrap.className = 'nav__social';
+      wrap.innerHTML = NETS.map((n) =>
+        '<a href="' + escapeHtml(n.url) + '" ' + ext + ' aria-label="' + n.name + ' ' + escapeHtml(n.handle) + '">' + ICON[n.key] + '</a>').join('');
+      const cta = $('.btn', navLinks);
+      navLinks.insertBefore(wrap, cta || null);
+    }
+
+    /* phones: a slim action bar that stays within thumb reach */
+    if (NETS.length || !onEnquiry) {
+      const dock = document.createElement('nav');
+      dock.className = 'dock';
+      dock.setAttribute('aria-label', 'Quick contact');
+      dock.innerHTML =
+        (onEnquiry ? '' : '<a class="dock__main" href="enquiry.html">Check your date</a>') +
+        NETS.map((n) => '<a class="dock__icon" href="' + escapeHtml(n.url) + '" ' + ext + ' aria-label="' + n.name + '">' + ICON[n.key] + '</a>').join('') +
+        (INBOX ? '<a class="dock__icon" href="mailto:' + escapeHtml(INBOX) + '" aria-label="Email ' + escapeHtml(INBOX) + '">' + ICON.mail + '</a>' : '');
+      document.body.appendChild(dock);
+      document.body.classList.add('has-dock');
+      /* tuck it away while the hero is in view, and while the menu is open */
+      const hero = $('.hero');
+      const sync = () => {
+        const past = !hero || hero.getBoundingClientRect().bottom < window.innerHeight * 0.6;
+        dock.classList.toggle('is-shown', past && !document.body.classList.contains('is-locked'));
+      };
+      sync();
+      window.addEventListener('scroll', sync, { passive: true });
+      window.addEventListener('resize', sync);
+      new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    }
+  })();
+
+  /* ---------------------------------------------------
+     9. Studio details injected from data.js
      --------------------------------------------------- */
   (function details() {
     $$('[data-site]').forEach((el) => {
