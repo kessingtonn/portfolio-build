@@ -1,0 +1,12 @@
+// Cloudflare Workers deploy (Workers & Pages -> Create -> Import a repository).
+// There is no server code: tools/ci-site.sh copies the public files into
+// _site and Cloudflare serves them, applying _headers for security.
+{
+  "name": "zangrid",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./_site",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}

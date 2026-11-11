@@ -21,3 +21,7 @@ assets/js/data.js.backup
 !assets/video/hero-loop*.webm
 !assets/video/work/**/*.mp4
 !assets/video/heroes/*.mp4
+
+# build output for hosting
+_site/
+.wrangler/
