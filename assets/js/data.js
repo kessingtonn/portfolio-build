@@ -17,17 +17,17 @@ window.ZANGRID = (function () {
   const site = {
     name: 'Zangrid Studios',
     tagline: 'Photo & film for weddings, portraits, brands and creators.',
-    email: 'hello@zangridstudios.com',
-    phone: '+44 7700 900 118',
+    email: 'zangridd@gmail.com',
+    phone: '+44 7523 806537',
     location: 'London · Travelling worldwide',
-    instagram: 'https://instagram.com/zangridstudios',
-    tiktok: 'https://www.tiktok.com/@zangridstudios',
-    vimeo: 'https://vimeo.com/zangridstudios',
-    youtube: 'https://youtube.com/@zangridstudios',
+    instagram: 'https://www.instagram.com/zangrid.jpg/',
+    tiktok: 'https://www.tiktok.com/@zangrid',
+    vimeo: '',      // add the channel URL to show Vimeo links
+    youtube: '',    // add the channel URL to show YouTube links
 
     /* shown on the social cards — keep them in step with the links above */
-    instagramHandle: '@zangridstudios',
-    tiktokHandle: '@zangridstudios',
+    instagramHandle: '@zangrid.jpg',
+    tiktokHandle: '@zangrid',
 
     /* the small badge on the home hero; empty hides it */
     bookingNote: 'Now booking 2026 & 2027',
@@ -40,7 +40,7 @@ window.ZANGRID = (function () {
        click it once and every enquiry after lands in Gmail.
        Leave it empty and visitors get "Open in Gmail" / "Open in
        email app" buttons with the message already written. */
-    enquiryEmail: '',
+    enquiryEmail: 'zangridd@gmail.com',
 
     /* Enquiry form delivery.
        Paste a form endpoint (Formspree, Basin, Netlify Forms

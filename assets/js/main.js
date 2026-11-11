@@ -1620,6 +1620,12 @@
     $$('[data-site]').forEach((el) => {
       const key = el.getAttribute('data-site');
       const value = DATA.site[key];
+      /* a network set to '' in data.js has no account yet: hide its links */
+      if (value === '' && el.tagName === 'A') {
+        const item = el.closest('li') || el;
+        item.hidden = true;
+        return;
+      }
       if (!value) return;
       if (el.tagName === 'A') {
         el.href = key === 'email' ? 'mailto:' + value : key === 'phone' ? 'tel:' + value.replace(/\s/g, '') : value;
