@@ -145,28 +145,58 @@
     });
     video.addEventListener('error', () => hero.classList.remove('is-playing'), true);
 
-    const play = () => {
-      const attempt = video.play();
-      if (attempt && typeof attempt.catch === 'function') {
-        attempt.catch(() => {
-          /* Autoplay blocked — the animated fallback stays,
-             and the toggle below lets the visitor start it. */
-        });
-      }
+    /* Muted + inline is what lets browsers autoplay without a click. */
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+
+    /* Only the visitor's own pause button stops the loop. */
+    const userPaused = () => {
+      const c = $('.hero__ctrl');
+      return !!c && c.getAttribute('aria-pressed') === 'true';
     };
 
-    if (reducedMotion) {
-      video.removeAttribute('autoplay');
-      video.pause();
-    } else {
-      video.load();
-      play();
+    /* Some devices refuse autoplay outright (iPhone Low Power Mode,
+       data-saver modes). There the loop starts on the visitor's first
+       touch, click, scroll or key press instead. */
+    const KICKS = ['pointerdown', 'touchstart', 'keydown', 'scroll', 'wheel'];
+    let armed = false;
+    const kick = () => {
+      disarm();
+      if (!userPaused()) play();
+    };
+    function arm() {
+      if (armed) return;
+      armed = true;
+      KICKS.forEach((type) => window.addEventListener(type, kick, { passive: true }));
     }
+    function disarm() {
+      armed = false;
+      KICKS.forEach((type) => window.removeEventListener(type, kick));
+    }
+
+    function play() {
+      const attempt = video.play();
+      if (attempt && typeof attempt.catch === 'function') attempt.catch(arm);
+    }
+
+    video.addEventListener('playing', disarm);
+    video.addEventListener('canplay', () => {
+      if (video.paused && !userPaused()) play();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && video.paused && !userPaused()) play();
+    });
+
+    video.load();
+    play();
 
     /* Play / pause control */
     const ctrl = $('.hero__ctrl');
     if (ctrl) {
-      ctrl.setAttribute('aria-pressed', String(reducedMotion));
+      ctrl.setAttribute('aria-pressed', 'false');
       ctrl.addEventListener('click', () => {
         if (video.paused) {
           play();
@@ -186,7 +216,7 @@
         (entries) => {
           entries.forEach((entry) => {
             const paused = ctrl && ctrl.getAttribute('aria-pressed') === 'true';
-            if (paused || reducedMotion) return;
+            if (paused) return;
             if (entry.isIntersecting) play();
             else video.pause();
           });
@@ -1025,7 +1055,7 @@
   $$('[data-hero-media]').forEach(function (host) {
     const cat = category(host.getAttribute('data-hero-media'));
     const hero = host.closest('.hero');
-    if (cat.heroVideo && !reducedMotion) {
+    if (cat.heroVideo) {
       const video = document.createElement('video');
       video.src = cat.heroVideo;
       video.muted = true;
@@ -1040,8 +1070,18 @@
         if (hero) hero.classList.add('is-playing');
       });
       host.insertBefore(video, host.firstChild);
-      const attempt = video.play();
-      if (attempt && attempt.catch) attempt.catch(function () {});
+      const start = function () {
+        const attempt = video.play();
+        if (attempt && attempt.catch) {
+          attempt.catch(function () {
+            /* autoplay refused: start on the first touch, scroll or key */
+            ['pointerdown', 'touchstart', 'keydown', 'scroll', 'wheel'].forEach(function (type) {
+              window.addEventListener(type, start, { passive: true, once: true });
+            });
+          });
+        }
+      };
+      start();
     } else if (cat.heroImage) {
       const img = document.createElement('img');
       img.src = cat.heroImage;
